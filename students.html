@@ -1,0 +1,1425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Management</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar h1 {
+            font-size: 24px;
+            font-weight: 500;
+        }
+
+        .navbar-links {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .navbar-links a {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            transition: opacity 0.2s;
+        }
+
+        .navbar-links a:hover {
+            opacity: 0.8;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+
+        .page-header {
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-header h2 {
+            color: #333;
+            font-size: 28px;
+        }
+
+        .actions-container {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .btn {
+            display: inline-block;
+            background: #764ba2;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 15px;
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .btn:hover {
+            background: #5f3d82;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            background-color: #545b62;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
+        .btn-success {
+            background-color: #28a745;
+        }
+
+        .btn-success:hover {
+            background-color: #218838;
+        }
+
+        .btn-info {
+            background-color: #17a2b8;
+        }
+
+        .btn-info:hover {
+            background-color: #138496;
+        }
+
+        /* Table styles */
+        .table-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+            overflow-x: auto;
+        }
+
+        .students-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .students-table th,
+        .students-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .students-table th {
+            background-color: #f2f2f2;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .students-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .students-table tr:hover {
+            background-color: #f8f8f8;
+        }
+
+        /* Filter section */
+        .filter-section {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .filter-form {
+            display: flex;
+            gap: 15px;
+            align-items: flex-end;
+            flex-wrap: wrap;
+        }
+
+        .form-group {
+            flex: 1;
+            min-width: 200px;
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group select,
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 500px;
+            max-width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 20px;
+        }
+
+        .close-btn {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close-btn:hover {
+            color: #333;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .error-message {
+            color: #dc3545;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        .success-message {
+            color: #28a745;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            margin-top: 20px;
+        }
+
+        .pagination button {
+            background: #f2f2f2;
+            border: 1px solid #ddd;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background 0.3s;
+        }
+
+        .pagination button:hover {
+            background: #e0e0e0;
+        }
+
+        .pagination button.active {
+            background: #764ba2;
+            color: white;
+            border-color: #764ba2;
+        }
+
+        /* Additional modal specific styles */
+        .enrollment-options {
+            display: none;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #ddd;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .actions-container {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                text-align: center;
+            }
+
+            .modal-content {
+                width: 95%;
+                margin: 10% auto;
+            }
+        }
+
+        /* Roll number result display */
+        .roll-result {
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        .roll-result p {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .roll-result .student-name {
+            font-size: 16px;
+            color: #666;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <h1>Student Management</h1>
+        <div class="navbar-links">
+            <a href="/admin">Dashboard</a>
+            <a href="login_page.html" id="logoutBtn">Logout</a>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container">
+        <div class="page-header">
+            <h2>Student Records</h2>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="actions-container">
+            <button class="btn" onclick="openAddStudentModal()">Add Student</button>
+            <button class="btn btn-info" onclick="openEnrollStudentModal()">Enroll Student</button>
+            <button class="btn btn-secondary" onclick="openUpdateStudentModal()">Update Student Info</button>
+            <button class="btn btn-danger" onclick="openRemoveStudentModal()">Remove Student</button>
+            <button class="btn btn-success" onclick="openRollNumberModal()">Get Student Roll Number</button>
+        </div>
+
+        <!-- Filter Section -->
+        <div class="filter-section">
+            <h3>Filter Students</h3>
+            <div class="filter-form">
+                <div class="form-group">
+                    <label for="filterClass">Class</label>
+                    <select id="filterClass" onchange="loadSectionsForFilter()">
+                        <option value="">All Classes</option>
+                        <!-- Will be populated by JavaScript -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="filterSection">Section</label>
+                    <select id="filterSection" disabled>
+                        <option value="">All Sections</option>
+                        <!-- Will be populated by JavaScript -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="searchName">Search by Name</label>
+                    <input type="text" id="searchName" placeholder="Enter student name">
+                </div>
+                <button class="btn" onclick="applyFilters()">Apply Filters</button>
+            </div>
+        </div>
+
+        <!-- Table Container -->
+        <div class="table-container">
+            <table class="students-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Gender</th>
+                        <th>Date of Birth</th>
+                        <th>Class</th>
+                        <th>Section</th>
+                        <th>Contact</th>
+                        <th>Guardian</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="studentsTableBody">
+                    <!-- Will be populated by JavaScript -->
+                </tbody>
+            </table>
+            <div id="noRecordsMessage" style="display: none; text-align: center; padding: 20px;">
+                No student records found.
+            </div>
+            <div class="pagination" id="pagination">
+                <!-- Will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Student Modal -->
+    <div id="addStudentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add New Student</h2>
+                <span class="close-btn" onclick="closeModal('addStudentModal')">&times;</span>
+            </div>
+            <div id="addStudentError" class="error-message"></div>
+            <div id="addStudentSuccess" class="success-message"></div>
+            <form id="addStudentForm">
+                <div class="form-group">
+                    <label for="name">Full Name*</label>
+                    <input type="text" id="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="gender">Gender*</label>
+                    <select id="gender" required>
+                        <option value="">Select Gender</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="dob">Date of Birth*</label>
+                    <input type="date" id="dob" required>
+                </div>
+                <div class="form-group">
+                    <label for="address">Address*</label>
+                    <input type="text" id="address" required>
+                </div>
+                <div class="form-group">
+                    <label for="contact">Contact Number*</label>
+                    <input type="text" id="contact" required>
+                </div>
+                <div class="form-group">
+                    <label for="guardianName">Guardian's Name*</label>
+                    <input type="text" id="guardianName" required>
+                </div>
+                <div class="form-group">
+                    <label for="relationship">Relationship with Student*</label>
+                    <input type="text" id="relationship" required>
+                </div>
+                <div class="form-group">
+                    <label for="guardianContact">Guardian's Contact*</label>
+                    <input type="text" id="guardianContact" required>
+                </div>
+                <div class="form-group">
+                    <label for="guardianEmail">Guardian's Email</label>
+                    <input type="email" id="guardianEmail">
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('addStudentModal')">Cancel</button>
+                    <button type="button" class="btn" onclick="addStudent(false)">Add Student</button>
+                    <button type="button" class="btn btn-success" onclick="addStudent(true)">Add & Enroll</button>
+                </div>
+
+                <!-- Enrollment options (shown when Add & Enroll is clicked) -->
+                <div id="enrollmentOptions" class="enrollment-options">
+                    <div class="form-group">
+                        <label for="enrollClass">Select Class*</label>
+                        <select id="enrollClass" onchange="loadSections('enrollClass', 'enrollSection')" required>
+                            <option value="">Select Class</option>
+                            <!-- Will be populated by JavaScript -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="enrollSection">Select Section*</label>
+                        <select id="enrollSection" required disabled>
+                            <option value="">Select Section</option>
+                            <!-- Will be populated by JavaScript -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="academicYear">Academic Year*</label>
+                        <input type="text" id="academicYear" value="2024-2025" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-success" onclick="enrollNewStudent()">Enroll Student</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Enroll Student Modal -->
+    <div id="enrollStudentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Enroll Existing Student</h2>
+                <span class="close-btn" onclick="closeModal('enrollStudentModal')">&times;</span>
+            </div>
+            <div id="enrollStudentError" class="error-message"></div>
+            <div id="enrollStudentSuccess" class="success-message"></div>
+            <form id="enrollStudentForm">
+                <div class="form-group">
+                    <label for="studentId">Student ID*</label>
+                    <input type="number" id="studentId" required>
+                </div>
+                <div class="form-group">
+                    <label for="enrollExistingClass">Select Class*</label>
+                    <select id="enrollExistingClass" onchange="loadSections('enrollExistingClass', 'enrollExistingSection')" required>
+                        <option value="">Select Class</option>
+                        <!-- Will be populated by JavaScript -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="enrollExistingSection">Select Section*</label>
+                    <select id="enrollExistingSection" required disabled>
+                        <option value="">Select Section</option>
+                        <!-- Will be populated by JavaScript -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="existingAcademicYear">Academic Year*</label>
+                    <input type="text" id="existingAcademicYear" value="2024-2025" required>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('enrollStudentModal')">Cancel</button>
+                    <button type="button" class="btn btn-success" onclick="enrollExistingStudent()">Enroll Student</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Update Student Modal -->
+    <div id="updateStudentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Update Student Information</h2>
+                <span class="close-btn" onclick="closeModal('updateStudentModal')">&times;</span>
+            </div>
+            <div id="findStudentSection">
+                <div id="findStudentError" class="error-message"></div>
+                <form id="findStudentForm">
+                    <div class="form-group">
+                        <label for="updateClass">Select Class*</label>
+                        <select id="updateClass" onchange="loadSections('updateClass', 'updateSection')" required>
+                            <option value="">Select Class</option>
+                            <!-- Will be populated by JavaScript -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="updateSection">Select Section*</label>
+                        <select id="updateSection" required disabled>
+                            <option value="">Select Section</option>
+                            <!-- Will be populated by JavaScript -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="updateStudentId">Student ID*</label>
+                        <input type="number" id="updateStudentId" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closeModal('updateStudentModal')">Cancel</button>
+                        <button type="button" class="btn" onclick="findStudentForUpdate()">Find Student</button>
+                    </div>
+                </form>
+            </div>
+            <div id="updateStudentSection" style="display: none;">
+                <div id="updateStudentError" class="error-message"></div>
+                <div id="updateStudentSuccess" class="success-message"></div>
+                <form id="updateStudentForm">
+                    <input type="hidden" id="updateId">
+                    <div class="form-group">
+                        <label for="updateName">Full Name*</label>
+                        <input type="text" id="updateName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="updateGender">Gender*</label>
+                        <select id="updateGender" required>
+                            <option value="">Select Gender</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="updateDob">Date of Birth*</label>
+                        <input type="date" id="updateDob" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="updateAddress">Address*</label>
+                        <input type="text" id="updateAddress" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="updateContact">Contact Number*</label>
+                        <input type="text" id="updateContact" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="updateGuardianName">Guardian's Name*</label>
+                        <input type="text" id="updateGuardianName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="updateRelationship">Relationship with Student*</label>
+                        <input type="text" id="updateRelationship" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="updateGuardianContact">Guardian's Contact*</label>
+                        <input type="text" id="updateGuardianContact" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="updateGuardianEmail">Guardian's Email</label>
+                        <input type="email" id="updateGuardianEmail">
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="backToFindStudent()">Back</button>
+                        <button type="button" class="btn btn-success" onclick="updateStudent()">Update Student</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Remove Student Modal -->
+    <div id="removeStudentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Remove Student</h2>
+                <span class="close-btn" onclick="closeModal('removeStudentModal')">&times;</span>
+            </div>
+            <div id="removeStudentError" class="error-message"></div>
+            <div id="removeStudentSuccess" class="success-message"></div>
+            <form id="removeStudentForm">
+                <div class="form-group">
+                    <label for="removeClass">Select Class*</label>
+                    <select id="removeClass" onchange="loadSections('removeClass', 'removeSection')" required>
+                        <option value="">Select Class</option>
+                        <!-- Will be populated by JavaScript -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="removeSection">Select Section*</label>
+                    <select id="removeSection" required disabled>
+                        <option value="">Select Section</option>
+                        <!-- Will be populated by JavaScript -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="removeStudentId">Student ID*</label>
+                    <input type="number" id="removeStudentId" required>
+                </div>
+                <div id="studentToRemoveInfo" style="display: none;">
+                    <div class="roll-result">
+                        <p>Student Information:</p>
+                        <div class="student-name" id="removeStudentName"></div>
+                    </div>
+                    <p class="error-message" style="margin-top: 15px; font-weight: bold;">Warning: This will remove all records related to this student including enrollments, attendance, and grades.</p>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('removeStudentModal')">Cancel</button>
+                    <button type="button" class="btn" id="findStudentToRemoveBtn" onclick="findStudentToRemove()">Find Student</button>
+                    <button type="button" class="btn btn-danger" id="confirmRemoveBtn" style="display: none;" onclick="removeStudent()">Confirm Removal</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Roll Number Modal -->
+    <div id="rollNumberModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Get Student Roll Number</h2>
+                <span class="close-btn" onclick="closeModal('rollNumberModal')">&times;</span>
+            </div>
+            <div id="rollNumberError" class="error-message"></div>
+            <form id="rollNumberForm">
+                <div class="form-group">
+                    <label for="rollName">Student Name*</label>
+                    <input type="text" id="rollName" required>
+                </div>
+                <div class="form-group">
+                    <label for="rollClass">Class*</label>
+                    <select id="rollClass" onchange="loadSections('rollClass', 'rollSection')" required>
+                        <option value="">Select Class</option>
+                        <!-- Will be populated by JavaScript -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="rollSection">Section*</label>
+                    <select id="rollSection" required disabled>
+                        <option value="">Select Section</option>
+                        <!-- Will be populated by JavaScript -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="rollDOB">Date of Birth</label>
+                    <input type="date" id="rollDOB">
+                </div>
+                <div class="form-group">
+                    <label for="rollContact">Contact Number</label>
+                    <input type="text" id="rollContact">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('rollNumberModal')">Cancel</button>
+                    <button type="button" class="btn btn-success" onclick="getStudentRollNumber()">Get Roll Number</button>
+                </div>
+                <div id="rollResult" class="roll-result" style="display: none;">
+                    <p>Student Roll Number: <span id="studentRollNumber"></span></p>
+                    <div class="student-name" id="studentRollName"></div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Initialization on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Fetch and populate classes for all dropdowns
+            fetchClasses('filterClass');
+            fetchClasses('enrollClass');
+            fetchClasses('enrollExistingClass');
+            fetchClasses('updateClass');
+            fetchClasses('removeClass');
+            fetchClasses('rollClass');
+
+            // Load initial student data
+            loadStudents();
+        });
+
+        // Fetch classes from database
+        function fetchClasses(selectId) {
+            fetch('/get_classes')
+                .then(response => response.json())
+                .then(data => {
+                    const classSelect = document.getElementById(selectId);
+                    classSelect.innerHTML = '<option value="">Select Class</option>';
+
+                    data.classes.forEach(classItem => {
+                        const option = document.createElement('option');
+                        option.value = classItem.ClassID;
+                        option.textContent = classItem.ClassName;
+                        classSelect.appendChild(option);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching classes:', error);
+                    if (selectId === 'filterClass') {
+                        showNoRecords('Failed to load classes. Please try again.');
+                    }
+                });
+        }
+
+        // Load sections based on selected class
+        function loadSections(classSelectId, sectionSelectId) {
+            const classSelect = document.getElementById(classSelectId);
+            const sectionSelect = document.getElementById(sectionSelectId);
+
+            // Reset and disable section dropdown
+            sectionSelect.innerHTML = '<option value="">Select Section</option>';
+            sectionSelect.disabled = true;
+
+            if (classSelect.value) {
+                // Fetch sections for the selected class
+                fetch(`/get_sections_for_students?class_id=${classSelect.value}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        data.sections.forEach(section => {
+                            const option = document.createElement('option');
+                            option.value = section.SectionID;
+                            option.textContent = section.SectionName;
+                            sectionSelect.appendChild(option);
+                        });
+
+                        // Enable section select
+                        sectionSelect.disabled = false;
+                    })
+                    .catch(error => {
+                        console.error('Error fetching sections:', error);
+                    });
+            }
+        }
+
+        // Load sections specifically for filter
+        function loadSectionsForFilter() {
+            loadSections('filterClass', 'filterSection');
+        }
+
+        // Load students with optional filters
+        function loadStudents(page = 1) {
+            const classId = document.getElementById('filterClass').value;
+            const sectionId = document.getElementById('filterSection').value;
+            const searchName = document.getElementById('searchName').value;
+
+            const tableBody = document.getElementById('studentsTableBody');
+            const noRecordsMessage = document.getElementById('noRecordsMessage');
+            const pagination = document.getElementById('pagination');
+
+            // Clear previous data
+            tableBody.innerHTML = '';
+            noRecordsMessage.style.display = 'none';
+            pagination.innerHTML = '';
+
+            // Prepare query parameters
+            let params = new URLSearchParams();
+            params.append('page', page);
+            if (classId) params.append('class_id', classId);
+            if (sectionId) params.append('section_id', sectionId);
+            if (searchName) params.append('name', searchName);
+
+            // Fetch students data
+            fetch(`/get_students?${params.toString()}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.students && data.students.length > 0) {
+                        data.students.forEach(student => {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                <td>${student.StudentID}</td>
+                                <td>${student.Name}</td>
+                                <td>${student.Gender}</td>
+                                <td>${formatDate(student.DateOfBirth)}</td>
+                                <td>${student.ClassName || '-'}</td>
+                                <td>${student.SectionName || '-'}</td>
+                                <td>${student.Contact}</td>
+                                <td>${student.GuardianName}</td>
+                                <td>
+                                    <button class="btn btn-secondary btn-sm" onclick="viewStudentDetails(${student.StudentID})">View</button>
+                                </td>
+                            `;
+                            tableBody.appendChild(row);
+                        });
+
+                        // Create pagination
+                        if (data.total_pages > 1) {
+                            for (let i = 1; i <= data.total_pages; i++) {
+                                const button = document.createElement('button');
+                                button.textContent = i;
+                                button.className = page === i ? 'active' : '';
+                                button.onclick = () => loadStudents(i);
+                                pagination.appendChild(button);
+                            }
+                        }
+                    } else {
+                        showNoRecords();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading students:', error);
+                    showNoRecords('Failed to load student data. Please try again.');
+                });
+        }
+
+        // Apply filters for student list
+        function applyFilters() {
+            loadStudents(1); // Reset to first page when applying filters
+        }
+
+        // Format date for display
+        function formatDate(dateString) {
+            if (!dateString) return '-';
+            const date = new Date(dateString);
+            return date.toLocaleDateString();
+        }
+
+        // Show no records message
+        function showNoRecords(message = 'No student records found.') {
+            const tableBody = document.getElementById('studentsTableBody');
+            const noRecordsMessage = document.getElementById('noRecordsMessage');
+
+            tableBody.innerHTML = '';
+            noRecordsMessage.textContent = message;
+            noRecordsMessage.style.display = 'block';
+        }
+
+        // Modal Functions
+        function openAddStudentModal() {
+            const modal = document.getElementById('addStudentModal');
+            const enrollmentOptions = document.getElementById('enrollmentOptions');
+            const errorMessage = document.getElementById('addStudentError');
+            const successMessage = document.getElementById('addStudentSuccess');
+
+            modal.style.display = 'block';
+            enrollmentOptions.style.display = 'none';
+            errorMessage.textContent = '';
+            successMessage.textContent = '';
+
+            // Reset form
+            document.getElementById('addStudentForm').reset();
+        }
+
+        function openEnrollStudentModal() {
+            const modal = document.getElementById('enrollStudentModal');
+            const errorMessage = document.getElementById('enrollStudentError');
+            const successMessage = document.getElementById('enrollStudentSuccess');
+
+            modal.style.display = 'block';
+            errorMessage.textContent = '';
+            successMessage.textContent = '';
+
+            // Reset form
+            document.getElementById('enrollStudentForm').reset();
+        }
+
+        function openUpdateStudentModal() {
+            const modal = document.getElementById('updateStudentModal');
+            const findSection = document.getElementById('findStudentSection');
+            const updateSection = document.getElementById('updateStudentSection');
+            const errorMessage = document.getElementById('findStudentError');
+
+            modal.style.display = 'block';
+            findSection.style.display = 'block';
+            updateSection.style.display = 'none';
+            errorMessage.textContent = '';
+
+            // Reset forms
+            document.getElementById('findStudentForm').reset();
+            document.getElementById('updateStudentForm').reset();
+        }
+
+        function openRemoveStudentModal() {
+            const modal = document.getElementById('removeStudentModal');
+            const studentInfo = document.getElementById('studentToRemoveInfo');
+            const findBtn = document.getElementById('findStudentToRemoveBtn');
+            const confirmBtn = document.getElementById('confirmRemoveBtn');
+            const errorMessage = document.getElementById('removeStudentError');
+            const successMessage = document.getElementById('removeStudentSuccess');
+
+            modal.style.display = 'block';
+            studentInfo.style.display = 'none';
+            findBtn.style.display = 'inline-block';
+            confirmBtn.style.display = 'none';
+            errorMessage.textContent = '';
+            successMessage.textContent = '';
+
+            // Reset form
+            document.getElementById('removeStudentForm').reset();
+        }
+
+        function openRollNumberModal() {
+            const modal = document.getElementById('rollNumberModal');
+            const result = document.getElementById('rollResult');
+            const errorMessage = document.getElementById('rollNumberError');
+
+            modal.style.display = 'block';
+            result.style.display = 'none';
+            errorMessage.textContent = '';
+
+            // Reset form
+            document.getElementById('rollNumberForm').reset();
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // Add student function
+        function addStudent(andEnroll) {
+            const errorDiv = document.getElementById('addStudentError');
+            const successDiv = document.getElementById('addStudentSuccess');
+            const enrollmentOptions = document.getElementById('enrollmentOptions');
+
+            errorDiv.textContent = '';
+            successDiv.textContent = '';
+
+            // Get form values
+            const name = document.getElementById('name').value.trim();
+            const gender = document.getElementById('gender').value;
+            const dob = document.getElementById('dob').value;
+            const address = document.getElementById('address').value.trim();
+            const contact = document.getElementById('contact').value.trim();
+            const guardianName = document.getElementById('guardianName').value.trim();
+            const relationship = document.getElementById('relationship').value.trim();
+            const guardianContact = document.getElementById('guardianContact').value.trim();
+            const guardianEmail = document.getElementById('guardianEmail').value.trim();
+
+            // Validate inputs
+            if (!name || !gender || !dob || !address || !contact || !guardianName || !relationship || !guardianContact) {
+                errorDiv.textContent = 'Please fill all required fields.';
+                return;
+            }
+
+            // Prepare data to send
+            const studentData = {
+                name,
+                gender,
+                dob,
+                address,
+                contact,
+                guardian_name: guardianName,
+                relationship,
+                guardian_contact: guardianContact,
+                guardian_email: guardianEmail
+            };
+
+            // Send request to add student
+            fetch('/add_student', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(studentData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    errorDiv.textContent = data.error;
+                } else {
+                    successDiv.textContent = 'Student added successfully!';
+
+                    if (andEnroll) {
+                        // Show enrollment options if requested
+                        enrollmentOptions.style.display = 'block';
+                        // Store student ID for enrollment
+                        enrollmentOptions.dataset.studentId = data.student_id;
+                    } else {
+                        // Reset form if not enrolling
+                        document.getElementById('addStudentForm').reset();
+                        // Reload student list
+                        setTimeout(() => {
+                            loadStudents();
+                        }, 1500);
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error adding student:', error);
+                errorDiv.textContent = 'Failed to add student. Please try again.';
+            });
+        }
+
+        // Enroll newly added student
+        function enrollNewStudent() {
+            const errorDiv = document.getElementById('addStudentError');
+            const successDiv = document.getElementById('addStudentSuccess');
+            const enrollmentOptions = document.getElementById('enrollmentOptions');
+
+            // Get enrollment data
+            const studentId = enrollmentOptions.dataset.studentId;
+            const classId = document.getElementById('enrollClass').value;
+            const sectionId = document.getElementById('enrollSection').value;
+            const academicYear = document.getElementById('academicYear').value.trim();
+
+            // Validate enrollment data
+            if (!studentId || !classId || !sectionId || !academicYear) {
+                errorDiv.textContent = 'Please fill all enrollment fields.';
+                return;
+            }
+
+            // Prepare enrollment data
+            const enrollmentData = {
+                student_id: studentId,
+                class_id: classId,
+                section_id: sectionId,
+                academic_year: academicYear
+            };
+
+            // Send enrollment request
+            fetch('/enroll_student', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(enrollmentData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    errorDiv.textContent = data.error;
+                } else {
+                    successDiv.textContent = 'Student added and enrolled successfully!';
+
+                    // Reset form after successful enrollment
+                    document.getElementById('addStudentForm').reset();
+                    enrollmentOptions.style.display = 'none';
+
+                    // Reload student list
+                    setTimeout(() => {
+                        loadStudents();
+                        closeModal('addStudentModal');
+                    }, 1500);
+                }
+            })
+            .catch(error => {
+                console.error('Error enrolling student:', error);
+                errorDiv.textContent = 'Failed to enroll student. Please try again.';
+            });
+        }
+
+        // Enroll existing student
+        function enrollExistingStudent() {
+            const errorDiv = document.getElementById('enrollStudentError');
+            const successDiv = document.getElementById('enrollStudentSuccess');
+
+            // Get enrollment data
+            const studentId = document.getElementById('studentId').value.trim();
+            const classId = document.getElementById('enrollExistingClass').value;
+            const sectionId = document.getElementById('enrollExistingSection').value;
+            const academicYear = document.getElementById('existingAcademicYear').value.trim();
+
+            // Validate enrollment data
+            if (!studentId || !classId || !sectionId || !academicYear) {
+                errorDiv.textContent = 'Please fill all required fields.';
+                return;
+            }
+
+            // Prepare enrollment data
+            const enrollmentData = {
+                student_id: studentId,
+                class_id: classId,
+                section_id: sectionId,
+                academic_year: academicYear
+            };
+
+            // Send enrollment request
+            fetch('/enroll_student', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(enrollmentData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    errorDiv.textContent = data.error;
+                } else {
+                    successDiv.textContent = 'Student enrolled successfully!';
+
+                    // Reset form after successful enrollment
+                    document.getElementById('enrollStudentForm').reset();
+
+                    // Reload student list
+                    setTimeout(() => {
+                        loadStudents();
+                        closeModal('enrollStudentModal');
+                    }, 1500);
+                }
+            })
+            .catch(error => {
+                console.error('Error enrolling student:', error);
+                errorDiv.textContent = 'Failed to enroll student. Please try again.';
+            });
+        }
+
+        // Find student for update
+        function findStudentForUpdate() {
+            const errorDiv = document.getElementById('findStudentError');
+            const classId = document.getElementById('updateClass').value;
+            const sectionId = document.getElementById('updateSection').value;
+            const studentId = document.getElementById('updateStudentId').value.trim();
+
+            errorDiv.textContent = '';
+
+            if (!classId || !sectionId || !studentId) {
+                errorDiv.textContent = 'Please fill all required fields.';
+                return;
+            }
+
+            // Fetch student details
+            fetch(`/get_student_details?class_id=${classId}&section_id=${sectionId}&student_id=${studentId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        errorDiv.textContent = data.error;
+                    } else if (data.student) {
+                        // Fill update form with student details
+                        document.getElementById('updateId').value = data.student.StudentID;
+                        document.getElementById('updateName').value = data.student.Name;
+                        document.getElementById('updateGender').value = data.student.Gender;
+                        document.getElementById('updateDob').value = data.student.DateOfBirth.split('T')[0];
+                        document.getElementById('updateAddress').value = data.student.Address;
+                        document.getElementById('updateContact').value = data.student.Contact;
+                        document.getElementById('updateGuardianName').value = data.student.GuardianName;
+                        document.getElementById('updateRelationship').value = data.student.Relationship;
+                        document.getElementById('updateGuardianContact').value = data.student.GuardianContact;
+                        document.getElementById('updateGuardianEmail').value = data.student.GuardianEmail || '';
+
+                        // Show update section
+                        document.getElementById('findStudentSection').style.display = 'none';
+                        document.getElementById('updateStudentSection').style.display = 'block';
+                    } else {
+                        errorDiv.textContent = 'Student not found.';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error finding student:', error);
+                    errorDiv.textContent = 'Failed to find student. Please try again.';
+                });
+        }
+
+        // Back to find student form
+        function backToFindStudent() {
+            document.getElementById('findStudentSection').style.display = 'block';
+            document.getElementById('updateStudentSection').style.display = 'none';
+            document.getElementById('updateStudentError').textContent = '';
+            document.getElementById('updateStudentSuccess').textContent = '';
+        }
+
+        // Update student information
+        function updateStudent() {
+            const errorDiv = document.getElementById('updateStudentError');
+            const successDiv = document.getElementById('updateStudentSuccess');
+
+            errorDiv.textContent = '';
+            successDiv.textContent = '';
+
+            // Get form values
+            const studentId = document.getElementById('updateId').value;
+            const name = document.getElementById('updateName').value.trim();
+            const gender = document.getElementById('updateGender').value;
+            const dob = document.getElementById('updateDob').value;
+            const address = document.getElementById('updateAddress').value.trim();
+            const contact = document.getElementById('updateContact').value.trim();
+            const guardianName = document.getElementById('updateGuardianName').value.trim();
+            const relationship = document.getElementById('updateRelationship').value.trim();
+            const guardianContact = document.getElementById('updateGuardianContact').value.trim();
+            const guardianEmail = document.getElementById('updateGuardianEmail').value.trim();
+
+            // Validate inputs
+            if (!name || !gender || !dob || !address || !contact || !guardianName || !relationship || !guardianContact) {
+                errorDiv.textContent = 'Please fill all required fields.';
+                return;
+            }
+
+            // Prepare data to send
+            const studentData = {
+                student_id: studentId,
+                name,
+                gender,
+                dob,
+                address,
+                contact,
+                guardian_name: guardianName,
+                relationship,
+                guardian_contact: guardianContact,
+                guardian_email: guardianEmail
+            };
+
+            // Send request to update student
+            fetch('/update_student', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(studentData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    errorDiv.textContent = data.error;
+                } else {
+                    successDiv.textContent = 'Student information updated successfully!';
+
+                    // Reload student list
+                    setTimeout(() => {
+                        loadStudents();
+                        backToFindStudent();
+                        closeModal('updateStudentModal');
+                    }, 1500);
+                }
+            })
+            .catch(error => {
+                console.error('Error updating student:', error);
+                errorDiv.textContent = 'Failed to update student. Please try again.';
+            });
+        }
+
+        // Find student to remove
+        function findStudentToRemove() {
+            const errorDiv = document.getElementById('removeStudentError');
+            const classId = document.getElementById('removeClass').value;
+            const sectionId = document.getElementById('removeSection').value;
+            const studentId = document.getElementById('removeStudentId').value.trim();
+
+            errorDiv.textContent = '';
+
+            if (!classId || !sectionId || !studentId) {
+                errorDiv.textContent = 'Please fill all required fields.';
+                return;
+            }
+
+            // Fetch student details
+            fetch(`/get_student_details?class_id=${classId}&section_id=${sectionId}&student_id=${studentId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        errorDiv.textContent = data.error;
+                    } else if (data.student) {
+                        // Show student info
+                        document.getElementById('removeStudentName').textContent =
+                            `${data.student.Name} (ID: ${data.student.StudentID}, Class: ${data.student.ClassName}, Section: ${data.student.SectionName})`;
+
+                        // Show confirmation elements
+                        document.getElementById('studentToRemoveInfo').style.display = 'block';
+                        document.getElementById('findStudentToRemoveBtn').style.display = 'none';
+                        document.getElementById('confirmRemoveBtn').style.display = 'inline-block';
+                    } else {
+                        errorDiv.textContent = 'Student not found.';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error finding student:', error);
+                    errorDiv.textContent = 'Failed to find student. Please try again.';
+                });
+        }
+
+        // Remove student
+        function removeStudent() {
+            const errorDiv = document.getElementById('removeStudentError');
+            const successDiv = document.getElementById('removeStudentSuccess');
+            const studentId = document.getElementById('removeStudentId').value.trim();
+
+            // Send request to remove student
+            fetch('/remove_student', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ student_id: studentId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    errorDiv.textContent = data.error;
+                } else {
+                    successDiv.textContent = 'Student and all related records removed successfully!';
+
+                    // Reset form elements
+                    document.getElementById('studentToRemoveInfo').style.display = 'none';
+                    document.getElementById('findStudentToRemoveBtn').style.display = 'inline-block';
+                    document.getElementById('confirmRemoveBtn').style.display = 'none';
+                    document.getElementById('removeStudentForm').reset();
+
+                    // Reload student list
+                    setTimeout(() => {
+                        loadStudents();
+                        closeModal('removeStudentModal');
+                    }, 1500);
+                }
+            })
+            .catch(error => {
+                console.error('Error removing student:', error);
+                errorDiv.textContent = 'Failed to remove student. Please try again.';
+            });
+        }
+
+        // Get student roll number
+        function getStudentRollNumber() {
+            const errorDiv = document.getElementById('rollNumberError');
+            const resultDiv = document.getElementById('rollResult');
+
+            errorDiv.textContent = '';
+            resultDiv.style.display = 'none';
+
+            // Get form values
+            const name = document.getElementById('rollName').value.trim();
+            const classId = document.getElementById('rollClass').value;
+            const sectionId = document.getElementById('rollSection').value;
+            const dob = document.getElementById('rollDOB').value;
+            const contact = document.getElementById('rollContact').value.trim();
+
+            if (!name || !classId || !sectionId) {
+                errorDiv.textContent = 'Please enter at least student name, class and section.';
+                return;
+            }
+
+            // Prepare query parameters
+            let params = new URLSearchParams();
+            params.append('name', name);
+            params.append('class_id', classId);
+            params.append('section_id', sectionId);
+            if (dob) params.append('dob', dob);
+            if (contact) params.append('contact', contact);
+
+            // Fetch student roll number
+            fetch(`/get_student_roll_number?${params.toString()}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        errorDiv.textContent = data.error;
+                    } else if (data.student) {
+                        // Show student roll number
+                        document.getElementById('studentRollNumber').textContent = data.student.StudentID;
+                        document.getElementById('studentRollName').textContent = data.student.Name;
+                        resultDiv.style.display = 'block';
+                    } else {
+                        errorDiv.textContent = 'Student not found.';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error finding student roll number:', error);
+                    errorDiv.textContent = 'Failed to find student. Please try again.';
+                });
+        }
+
+        // View student details function
+        function viewStudentDetails(studentId) {
+            // This function could open a modal with more detailed student information
+            alert(`Viewing details for student ID: ${studentId}`);
+            // You could implement a detailed view modal here
+        }
+
+        // Logout functionality
+        document.getElementById('logoutBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            window.location.href = '/logout';
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login/Signup</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+            position: relative;
+            overflow: hidden;
+            width: 768px;
+            max-width: 100%;
+            min-height: 480px;
+        }
+
+        .form-container {
+            position: absolute;
+            top: 0;
+            height: 100%;
+            transition: all 0.6s ease-in-out;
+        }
+
+        .sign-in-container {
+            left: 0;
+            width: 50%;
+            z-index: 2;
+        }
+
+        .sign-up-container {
+            left: 0;
+            width: 50%;
+            opacity: 0;
+            z-index: 1;
+        }
+
+        .container.right-panel-active .sign-in-container {
+            transform: translateX(100%);
+        }
+
+        .container.right-panel-active .sign-up-container {
+            transform: translateX(100%);
+            opacity: 1;
+            z-index: 5;
+        }
+
+        form {
+            background-color: #FFFFFF;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 0 50px;
+            height: 100%;
+            text-align: center;
+        }
+
+        h1 {
+            font-weight: bold;
+            margin-bottom: 24px;
+            color: #333;
+        }
+
+        p {
+            font-size: 14px;
+            font-weight: 300;
+            line-height: 20px;
+            letter-spacing: 0.5px;
+            margin: 20px 0 30px;
+        }
+
+        input {
+            background-color: #eee;
+            border: none;
+            padding: 12px 15px;
+            margin: 8px 0;
+            width: 100%;
+            border-radius: 5px;
+        }
+
+        button {
+            border-radius: 20px;
+            border: 1px solid #764ba2;
+            background-color: #764ba2;
+            color: #FFFFFF;
+            font-size: 12px;
+            font-weight: bold;
+            padding: 12px 45px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: transform 80ms ease-in;
+            cursor: pointer;
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        button:focus {
+            outline: none;
+        }
+
+        button.ghost {
+            background-color: transparent;
+            border-color: #FFFFFF;
+        }
+
+        .overlay-container {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 50%;
+            height: 100%;
+            overflow: hidden;
+            transition: transform 0.6s ease-in-out;
+            z-index: 100;
+        }
+
+        .container.right-panel-active .overlay-container {
+            transform: translateX(-100%);
+        }
+
+        .overlay {
+            background: linear-gradient(to right, #667eea, #764ba2);
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: 0 0;
+            color: #FFFFFF;
+            position: relative;
+            left: -100%;
+            height: 100%;
+            width: 200%;
+            transform: translateX(0);
+            transition: transform 0.6s ease-in-out;
+        }
+
+        .container.right-panel-active .overlay {
+            transform: translateX(50%);
+        }
+
+        .overlay-panel {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 0 40px;
+            text-align: center;
+            top: 0;
+            height: 100%;
+            width: 50%;
+            transform: translateX(0);
+            transition: transform 0.6s ease-in-out;
+        }
+
+        .overlay-left {
+            transform: translateX(-20%);
+        }
+
+        .container.right-panel-active .overlay-left {
+            transform: translateX(0);
+        }
+
+        .overlay-right {
+            right: 0;
+            transform: translateX(0);
+        }
+
+        .container.right-panel-active .overlay-right {
+            transform: translateX(20%);
+        }
+
+        .social-container {
+            margin: 20px 0;
+        }
+
+        .social-container a {
+            border: 1px solid #DDDDDD;
+            border-radius: 50%;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 5px;
+            height: 40px;
+            width: 40px;
+            text-decoration: none;
+            color: #333;
+        }
+
+        .social-container a:hover {
+            background-color: #f9f9f9;
+        }
+
+        .form-control {
+            position: relative;
+            margin-bottom: 10px;
+            width: 100%;
+        }
+
+        .error-message {
+            color: #ff3860;
+            font-size: 12px;
+            margin-top: 5px;
+            text-align: left;
+            display: none;
+            width: 100%;
+        }
+
+        .flash-messages {
+            width: 768px;
+            max-width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .flash-message {
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: opacity 0.5s ease;
+        }
+
+        .flash-error {
+            background-color: #fff3f3;
+            color: #ff3860;
+            border-left: 3px solid #ff3860;
+        }
+
+        .flash-success {
+            background-color: #f0fff4;
+            color: #2ece71;
+            border-left: 3px solid #2ece71;
+        }
+
+        .flash-info {
+            background-color: #e6f7ff;
+            color: #1890ff;
+            border-left: 3px solid #1890ff;
+        }
+    </style>
+</head>
+<body>
+    <!-- Flash Messages -->
+    <div class="flash-messages" id="flashMessages">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message {% if category == 'error' %}flash-error{% else %}flash-success{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <div class="container" id="container">
+        <div class="form-container sign-up-container">
+            <form id="signupForm" action="/signup" method="POST">
+                <h1>Create Account</h1>
+                <div class="social-container">
+                    <a href="#"><i>D</i></a>
+                    <a href="#"><i>B</i></a>
+                    <a href="#"><i>M</i></a>
+                    <a href="#"><i>S</i></a>
+                </div>
+                <p>Register below</p>
+                <div class="form-control">
+                    <input type="text" id="pin" name="pin" placeholder="Pin" required />
+                    <div class="error-message" id="pinError"></div>
+                </div>
+                <div class="form-control">
+                    <input type="email" id="signupEmail" name="email" placeholder="Email" required />
+                    <div class="error-message" id="signupEmailError"></div>
+                </div>
+                <div class="form-control">
+                    <input type="password" id="signupPassword" name="password" placeholder="Password" required />
+                    <div class="error-message" id="signupPasswordError"></div>
+                </div>
+                <button type="submit">Sign Up</button>
+            </form>
+        </div>
+        <div class="form-container sign-in-container">
+            <form id="loginForm" action="/login" method="POST">
+                <h1>Sign in</h1>
+                <div class="social-container">
+                    <a href="#"><i>D</i></a>
+                    <a href="#"><i>B</i></a>
+                    <a href="#"><i>M</i></a>
+                    <a href="#"><i>S</i></a>
+                </div>
+                <p>Sign In below</p>
+                <div class="form-control">
+                    <input type="email" id="loginEmail" name="email" placeholder="Email" required />
+                    <div class="error-message" id="loginEmailError"></div>
+                </div>
+                <div class="form-control">
+                    <input type="password" id="loginPassword" name="password" placeholder="Password" required />
+                    <div class="error-message" id="loginPasswordError"></div>
+                </div>
+                <a href="#" id="forgotPassword" style="color: #333; margin: 15px 0; text-decoration: none; font-size: 14px;">Forgot your password?</a>
+                <button type="submit">Sign In</button>
+            </form>
+        </div>
+        <div class="overlay-container">
+            <div class="overlay">
+                <div class="overlay-panel overlay-left">
+                    <h1>Welcome Back!</h1>
+                    <p>If you already have an account, please login with your personal info</p>
+                    <button class="ghost" id="signIn">Sign In</button>
+                </div>
+                <div class="overlay-panel overlay-right">
+                    <h1>Welcome!</h1>
+                    <p>If you don't have an account, register here</p>
+                    <button class="ghost" id="signUp">Sign Up</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Toggle between sign in and sign up panels
+            const signUpButton = document.getElementById('signUp');
+            const signInButton = document.getElementById('signIn');
+            const container = document.getElementById('container');
+
+            signUpButton.addEventListener('click', () => {
+                container.classList.add('right-panel-active');
+            });
+
+            signInButton.addEventListener('click', () => {
+                container.classList.remove('right-panel-active');
+            });
+
+            // Form validation
+            const loginForm = document.getElementById('loginForm');
+            const signupForm = document.getElementById('signupForm');
+
+            loginForm.addEventListener('submit', function(e) {
+                const email = document.getElementById('loginEmail').value;
+                const password = document.getElementById('loginPassword').value;
+
+                let isValid = true;
+
+                // Reset error messages
+                document.getElementById('loginEmailError').style.display = 'none';
+                document.getElementById('loginPasswordError').style.display = 'none';
+
+                // Email validation
+                if (!validateEmail(email)) {
+                    e.preventDefault();
+                    document.getElementById('loginEmailError').textContent = 'Please enter a valid email address';
+                    document.getElementById('loginEmailError').style.display = 'block';
+                    isValid = false;
+                }
+
+                // Password validation (min 6 characters)
+                if (password.length < 6) {
+                    e.preventDefault();
+                    document.getElementById('loginPasswordError').textContent = 'Password must be at least 6 characters';
+                    document.getElementById('loginPasswordError').style.display = 'block';
+                    isValid = false;
+                }
+            });
+
+            signupForm.addEventListener('submit', function(e) {
+                const pin = document.getElementById('pin').value;
+                const email = document.getElementById('signupEmail').value;
+                const password = document.getElementById('signupPassword').value;
+
+                let isValid = true;
+
+                // Reset error messages
+                document.getElementById('pinError').style.display = 'none';
+                document.getElementById('signupEmailError').style.display = 'none';
+                document.getElementById('signupPasswordError').style.display = 'none';
+
+                // PIN validation
+                if (pin !== "1111" && pin !== "0000") {
+                    e.preventDefault();
+                    document.getElementById('pinError').textContent = 'Invalid PIN';
+                    document.getElementById('pinError').style.display = 'block';
+                    isValid = false;
+                }
+
+                // Email validation
+                if (!validateEmail(email)) {
+                    e.preventDefault();
+                    document.getElementById('signupEmailError').textContent = 'Please enter a valid email address';
+                    document.getElementById('signupEmailError').style.display = 'block';
+                    isValid = false;
+                }
+
+                // Password validation
+                if (password.length < 6) {
+                    e.preventDefault();
+                    document.getElementById('signupPasswordError').textContent = 'Password must be at least 6 characters';
+                    document.getElementById('signupPasswordError').style.display = 'block';
+                    isValid = false;
+                }
+            });
+
+            function validateEmail(email) {
+                const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                return re.test(String(email).toLowerCase());
+            }
+
+            // Handle flash messages auto-hide after 5 seconds
+            const flashMessages = document.querySelectorAll('.flash-message');
+            flashMessages.forEach(message => {
+                setTimeout(() => {
+                    message.style.opacity = '0';
+                    setTimeout(() => {
+                        message.style.display = 'none';
+                    }, 500);
+                }, 5000);
+            });
+
+            // Add functionality for "Forgot your password?" link
+            const forgotPasswordLink = document.getElementById('forgotPassword');
+            forgotPasswordLink.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                // Create a new flash message element
+                const flashMessage = document.createElement('div');
+                flashMessage.className = 'flash-message flash-info';
+                flashMessage.textContent = 'Please contact your admin for password recovery assistance.';
+
+                // Add the flash message to the flash messages container
+                const flashMessagesContainer = document.getElementById('flashMessages');
+                flashMessagesContainer.appendChild(flashMessage);
+
+                // Auto-hide the message after 5 seconds
+                setTimeout(() => {
+                    flashMessage.style.opacity = '0';
+                    setTimeout(() => {
+                        flashMessage.remove();
+                    }, 500);
+                }, 5000);
+
+                // Scroll to the top to make sure the message is visible
+                window.scrollTo(0, 0);
+            });
+        });
+    </script>
+</body>
+</html>

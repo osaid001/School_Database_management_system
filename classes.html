@@ -1,0 +1,1379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Class Management</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar h1 {
+            font-size: 24px;
+            font-weight: 500;
+        }
+
+        .navbar-links {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .navbar-links a {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            transition: opacity 0.2s;
+        }
+
+        .navbar-links a:hover {
+            opacity: 0.8;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+
+        .page-header {
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-header h2 {
+            color: #333;
+            font-size: 28px;
+        }
+
+        .actions-container {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .btn {
+            display: inline-block;
+            background: #764ba2;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 15px;
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .btn:hover {
+            background: #5f3d82;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            background-color: #545b62;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
+        .btn-success {
+            background-color: #28a745;
+        }
+
+        .btn-success:hover {
+            background-color: #218838;
+        }
+
+        .btn-info {
+            background-color: #17a2b8;
+        }
+
+        .btn-info:hover {
+            background-color: #138496;
+        }
+
+        /* Table styles */
+        .table-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+            overflow-x: auto;
+        }
+
+        .classes-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .classes-table th,
+        .classes-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .classes-table th {
+            background-color: #f2f2f2;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .classes-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .classes-table tr:hover {
+            background-color: #f8f8f8;
+        }
+
+        /* Filter section */
+        .filter-section {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .filter-form {
+            display: flex;
+            gap: 15px;
+            align-items: flex-end;
+            flex-wrap: wrap;
+        }
+
+        .form-group {
+            flex: 1;
+            min-width: 200px;
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group select,
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 500px;
+            max-width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 20px;
+        }
+
+        .close-btn {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close-btn:hover {
+            color: #333;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .error-message {
+            color: #dc3545;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        .success-message {
+            color: #28a745;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        /* Additional modal specific styles */
+        .choice-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .choice-buttons button {
+            flex: 1;
+            max-width: 200px;
+        }
+
+        .form-section {
+            display: none;
+        }
+
+        /* Sections list in modal */
+        .sections-list {
+            margin: 15px 0;
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+        }
+
+        .section-item {
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+        }
+
+        .section-item:last-child {
+            border-bottom: none;
+        }
+
+        .section-item:hover {
+            background-color: #f8f8f8;
+        }
+
+        .section-item.selected {
+            background-color: #e6f7ff;
+        }
+
+        /* Warning message */
+        .warning-message {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            margin-top: 20px;
+        }
+
+        .pagination button {
+            background: #f2f2f2;
+            border: 1px solid #ddd;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background 0.3s;
+        }
+
+        .pagination button:hover {
+            background: #e0e0e0;
+        }
+
+        .pagination button.active {
+            background: #764ba2;
+            color: white;
+            border-color: #764ba2;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .actions-container {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                text-align: center;
+            }
+
+            .modal-content {
+                width: 95%;
+                margin: 10% auto;
+            }
+
+            .choice-buttons {
+                flex-direction: column;
+            }
+
+            .choice-buttons button {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <h1>Class Management</h1>
+        <div class="navbar-links">
+            <a href="/admin">Dashboard</a>
+            <a href="/logout" id="logoutBtn">Logout</a>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container">
+        <div class="page-header">
+            <h2>Classes and Sections</h2>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="actions-container">
+            <button class="btn" onclick="openAddModal()">Add Class/Section</button>
+            <button class="btn btn-secondary" onclick="openUpdateModal()">Update Class/Section</button>
+            <button class="btn btn-danger" onclick="openRemoveModal()">Remove Class/Section</button>
+        </div>
+
+        <!-- Filter Section -->
+        <div class="filter-section">
+            <h3>Filter Classes</h3>
+            <div class="filter-form">
+                <div class="form-group">
+                    <label for="searchClass">Search by Class Name</label>
+                    <input type="text" id="searchClass" placeholder="Enter class name">
+                </div>
+                <div class="form-group">
+                    <label for="filterRoom">Filter by Room Number</label>
+                    <input type="text" id="filterRoom" placeholder="Enter room number">
+                </div>
+                <button class="btn" onclick="applyFilters()">Apply Filters</button>
+            </div>
+        </div>
+
+        <!-- Table Container -->
+        <div class="table-container">
+            <table class="classes-table">
+                <thead>
+                    <tr>
+                        <th>Class ID</th>
+                        <th>Class Name</th>
+                        <th>Room Number</th>
+                        <th>Number of Sections</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="classesTableBody">
+                    <!-- Will be populated by JavaScript -->
+                </tbody>
+            </table>
+            <div id="noRecordsMessage" style="display: none; text-align: center; padding: 20px;">
+                No class records found.
+            </div>
+            <div class="pagination" id="pagination">
+                <!-- Will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Class/Section Modal -->
+    <div id="addModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add Class/Section</h2>
+                <span class="close-btn" onclick="closeModal('addModal')">&times;</span>
+            </div>
+            <div class="choice-buttons">
+                <button class="btn" onclick="showAddClassForm()">Add Class</button>
+                <button class="btn" onclick="showAddSectionForm()">Add Section</button>
+            </div>
+
+            <!-- Add Class Form -->
+            <div id="addClassForm" class="form-section">
+                <div id="addClassError" class="error-message"></div>
+                <div id="addClassSuccess" class="success-message"></div>
+                <form>
+                    <div class="form-group">
+                        <label for="className">Class Name*</label>
+                        <input type="text" id="className" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="roomNumber">Room Number*</label>
+                        <input type="text" id="roomNumber" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closeModal('addModal')">Cancel</button>
+                        <button type="button" class="btn btn-success" onclick="addClass()">Add Class</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Add Section Form -->
+            <div id="addSectionForm" class="form-section">
+                <div id="addSectionError" class="error-message"></div>
+                <div id="addSectionSuccess" class="success-message"></div>
+                <form>
+                    <div class="form-group">
+                        <label for="addSectionClassSelect">Select Class*</label>
+                        <select id="addSectionClassSelect" required>
+                            <option value="">Select Class</option>
+                            <!-- Will be populated by JavaScript -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="sectionName">Section Name*</label>
+                        <input type="text" id="sectionName" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closeModal('addModal')">Cancel</button>
+                        <button type="button" class="btn btn-success" onclick="addSection()">Add Section</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Update Class/Section Modal -->
+    <div id="updateModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Update Class/Section</h2>
+                <span class="close-btn" onclick="closeModal('updateModal')">&times;</span>
+            </div>
+            <div class="choice-buttons">
+                <button class="btn" onclick="showUpdateClassForm()">Update Class</button>
+                <button class="btn" onclick="showUpdateSectionForm()">Update Section</button>
+            </div>
+
+            <!-- Update Class Form -->
+            <div id="updateClassForm" class="form-section">
+                <div id="updateClassError" class="error-message"></div>
+                <div id="updateClassSuccess" class="success-message"></div>
+                <form>
+                    <div class="form-group">
+                        <label for="updateClassSelect">Select Class*</label>
+                        <select id="updateClassSelect" onchange="fetchClassDetails()" required>
+                            <option value="">Select Class</option>
+                            <!-- Will be populated by JavaScript -->
+                        </select>
+                    </div>
+                    <div id="classDetailsSection" style="display: none;">
+                        <div class="form-group">
+                            <label for="updateClassName">Class Name*</label>
+                            <input type="text" id="updateClassName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="updateRoomNumber">Room Number*</label>
+                            <input type="text" id="updateRoomNumber" required>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-secondary" onclick="closeModal('updateModal')">Cancel</button>
+                            <button type="button" class="btn btn-success" onclick="updateClass()">Update Class</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Update Section Form -->
+            <div id="updateSectionForm" class="form-section">
+                <div id="updateSectionError" class="error-message"></div>
+                <div id="updateSectionSuccess" class="success-message"></div>
+                <form>
+                    <div class="form-group">
+                        <label for="updateSectionClassSelect">Select Class*</label>
+                        <select id="updateSectionClassSelect" onchange="loadSections()" required>
+                            <option value="">Select Class</option>
+                            <!-- Will be populated by JavaScript -->
+                        </select>
+                    </div>
+                    <div id="sectionSelectContainer" style="display: none;">
+                        <div class="form-group">
+                            <label for="updateSectionSelect">Select Section*</label>
+                            <select id="updateSectionSelect" onchange="fetchSectionDetails()" required>
+                                <option value="">Select Section</option>
+                                <!-- Will be populated by JavaScript -->
+                            </select>
+                        </div>
+                    </div>
+                    <div id="sectionDetailsSection" style="display: none;">
+                        <div class="form-group">
+                            <label for="updateSectionName">Section Name*</label>
+                            <input type="text" id="updateSectionName" required>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-secondary" onclick="closeModal('updateModal')">Cancel</button>
+                            <button type="button" class="btn btn-success" onclick="updateSection()">Update Section</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Remove Class/Section Modal -->
+    <div id="removeModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Remove Class/Section</h2>
+                <span class="close-btn" onclick="closeModal('removeModal')">&times;</span>
+            </div>
+            <div class="choice-buttons">
+                <button class="btn" onclick="showRemoveClassForm()">Remove Class</button>
+                <button class="btn" onclick="showRemoveSectionForm()">Remove Section</button>
+            </div>
+
+            <!-- Remove Class Form -->
+            <div id="removeClassForm" class="form-section">
+                <div id="removeClassError" class="error-message"></div>
+                <div id="removeClassSuccess" class="success-message"></div>
+                <form>
+                    <div class="form-group">
+                        <label for="removeClassSelect">Select Class*</label>
+                        <select id="removeClassSelect" onchange="showClassRemoveWarning()" required>
+                            <option value="">Select Class</option>
+                            <!-- Will be populated by JavaScript -->
+                        </select>
+                    </div>
+                    <div id="classRemoveWarning" class="warning-message" style="display: none;">
+                        <p><strong>Warning:</strong> Removing this class will also delete all associated sections, subjects, teacher assignments, enrollments, and other related data. This action cannot be undone.</p>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closeModal('removeModal')">Cancel</button>
+                        <button type="button" class="btn btn-danger" id="confirmRemoveClassBtn" style="display: none;" onclick="removeClass()">Remove Permanently</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Remove Section Form -->
+            <div id="removeSectionForm" class="form-section">
+                <div id="removeSectionError" class="error-message"></div>
+                <div id="removeSectionSuccess" class="success-message"></div>
+                <form>
+                    <div class="form-group">
+                        <label for="removeSectionClassSelect">Select Class*</label>
+                        <select id="removeSectionClassSelect" onchange="loadSectionsForRemoval()" required>
+                            <option value="">Select Class</option>
+                            <!-- Will be populated by JavaScript -->
+                        </select>
+                    </div>
+                    <div id="removeSectionSelectContainer" style="display: none;">
+                        <div class="form-group">
+                            <label for="removeSectionSelect">Select Section*</label>
+                            <select id="removeSectionSelect" onchange="showSectionRemoveWarning()" required>
+                                <option value="">Select Section</option>
+                                <!-- Will be populated by JavaScript -->
+                            </select>
+                        </div>
+                    </div>
+                    <div id="sectionRemoveWarning" class="warning-message" style="display: none;">
+                        <p><strong>Warning:</strong> Removing this section will also delete all associated teacher assignments, enrollments, and other related data. This action cannot be undone.</p>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closeModal('removeModal')">Cancel</button>
+                        <button type="button" class="btn btn-danger" id="confirmRemoveSectionBtn" style="display: none;" onclick="removeSection()">Remove Permanently</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Sections Modal -->
+    <div id="viewSectionsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Class Sections</h2>
+                <span class="close-btn" onclick="closeModal('viewSectionsModal')">&times;</span>
+            </div>
+            <div id="viewSectionsError" class="error-message"></div>
+            <div id="viewSectionsContent">
+                <h3 id="viewClassName"></h3>
+                <div class="sections-list" id="sectionsList">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('viewSectionsModal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let selectedClassId = null;
+        let selectedSectionId = null;
+
+        // Initialization on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load initial class data
+            loadClasses();
+        });
+
+        // Load classes with optional filters
+        function loadClasses(page = 1) {
+            const searchClass = document.getElementById('searchClass').value.trim();
+            const filterRoom = document.getElementById('filterRoom').value.trim();
+
+            const tableBody = document.getElementById('classesTableBody');
+            const noRecordsMessage = document.getElementById('noRecordsMessage');
+            const pagination = document.getElementById('pagination');
+
+            // Clear previous data
+            tableBody.innerHTML = '';
+            noRecordsMessage.style.display = 'none';
+            pagination.innerHTML = '';
+
+            // Prepare query parameters
+            let params = new URLSearchParams();
+            params.append('page', page);
+            if (searchClass) params.append('class_name', searchClass);
+            if (filterRoom) params.append('room_number', filterRoom);
+
+            // Fetch classes data
+            fetch(`/get_classes_for_class?${params.toString()}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.classes && data.classes.length > 0) {
+                        data.classes.forEach(classItem => {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                <td>${classItem.ClassID}</td>
+                                <td>${classItem.ClassName}</td>
+                                <td>${classItem.RoomNumber}</td>
+                                <td>${classItem.SectionCount || 0}</td>
+                                <td>
+                                    <button class="btn btn-info btn-sm" onclick="viewSections(${classItem.ClassID}, '${classItem.ClassName}')">View Sections</button>
+                                </td>
+                            `;
+                            tableBody.appendChild(row);
+                        });
+
+                        // Create pagination
+                        if (data.total_pages > 1) {
+                            for (let i = 1; i <= data.total_pages; i++) {
+                                const button = document.createElement('button');
+                                button.textContent = i;
+                                button.className = page === i ? 'active' : '';
+                                button.onclick = () => loadClasses(i);
+                                pagination.appendChild(button);
+                            }
+                        }
+                    } else {
+                        showNoRecords();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading classes:', error);
+                    showNoRecords('Failed to load class data. Please try again.');
+                });
+        }
+
+        // Apply filters for class list
+        function applyFilters() {
+            loadClasses(1); // Reset to first page when applying filters
+        }
+
+        // Show no records message
+        function showNoRecords(message = 'No class records found.') {
+            const tableBody = document.getElementById('classesTableBody');
+            const noRecordsMessage = document.getElementById('noRecordsMessage');
+
+            tableBody.innerHTML = '';
+            noRecordsMessage.textContent = message;
+            noRecordsMessage.style.display = 'block';
+        }
+
+        // Populate class select dropdowns
+        function populateClassSelect(selectId, callback = null) {
+            fetch('/get_all_classes')
+                .then(response => response.json())
+                .then(data => {
+                    const select = document.getElementById(selectId);
+                    select.innerHTML = '<option value="">Select Class</option>';
+
+                    if (data.classes && data.classes.length > 0) {
+                        data.classes.forEach(classItem => {
+                            const option = document.createElement('option');
+                            option.value = classItem.ClassID;
+                            option.textContent = classItem.ClassName;
+                            select.appendChild(option);
+                        });
+
+                        if (callback) callback();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching classes for dropdown:', error);
+                });
+        }
+
+        // Load sections for a class
+        function loadSections() {
+            const classId = document.getElementById('updateSectionClassSelect').value;
+            const sectionSelect = document.getElementById('updateSectionSelect');
+            const sectionContainer = document.getElementById('sectionSelectContainer');
+
+            if (!classId) {
+                sectionContainer.style.display = 'none';
+                return;
+            }
+
+            // Reset and show section select
+            sectionSelect.innerHTML = '<option value="">Select Section</option>';
+            sectionContainer.style.display = 'block';
+
+            // Fetch sections for the selected class
+            fetch(`/get_sections_for_class?class_id=${classId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.sections && data.sections.length > 0) {
+                        data.sections.forEach(section => {
+                            const option = document.createElement('option');
+                            option.value = section.SectionID;
+                            option.textContent = section.SectionName;
+                            sectionSelect.appendChild(option);
+                        });
+                    } else {
+                        // No sections found
+                        const option = document.createElement('option');
+                        option.textContent = 'No sections available';
+                        option.disabled = true;
+                        sectionSelect.appendChild(option);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching sections:', error);
+                });
+        }
+
+        // Load sections for removal
+        function loadSectionsForRemoval() {
+            const classId = document.getElementById('removeSectionClassSelect').value;
+            const sectionSelect = document.getElementById('removeSectionSelect');
+            const sectionContainer = document.getElementById('removeSectionSelectContainer');
+
+            if (!classId) {
+                sectionContainer.style.display = 'none';
+                return;
+            }
+
+            // Reset and show section select
+            sectionSelect.innerHTML = '<option value="">Select Section</option>';
+            sectionContainer.style.display = 'block';
+
+            // Hide warning and confirm button
+            document.getElementById('sectionRemoveWarning').style.display = 'none';
+            document.getElementById('confirmRemoveSectionBtn').style.display = 'none';
+
+            // Fetch sections for the selected class
+            fetch(`/get_sections_for_class?class_id=${classId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.sections && data.sections.length > 0) {
+                        data.sections.forEach(section => {
+                            const option = document.createElement('option');
+                            option.value = section.SectionID;
+                            option.textContent = section.SectionName;
+                            sectionSelect.appendChild(option);
+                        });
+                    } else {
+                        // No sections found
+                        const option = document.createElement('option');
+                        option.textContent = 'No sections available';
+                        option.disabled = true;
+                        sectionSelect.appendChild(option);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching sections:', error);
+                });
+        }
+
+        // View sections of a class
+       // View sections of a class (continued)
+        function viewSections(classId, className) {
+            const modal = document.getElementById('viewSectionsModal');
+            const sectionsList = document.getElementById('sectionsList');
+            const errorMessage = document.getElementById('viewSectionsError');
+            const viewClassName = document.getElementById('viewClassName');
+
+            modal.style.display = 'block';
+            sectionsList.innerHTML = '<p>Loading sections...</p>';
+            errorMessage.textContent = '';
+            viewClassName.textContent = `${className} - Sections`;
+
+            // Fetch sections for the selected class
+            fetch(`/get_sections_for_class?class_id=${classId}`)
+                .then(response => response.json())
+                .then(data => {
+                    sectionsList.innerHTML = '';
+
+                    if (data.sections && data.sections.length > 0) {
+                        data.sections.forEach(section => {
+                            const sectionItem = document.createElement('div');
+                            sectionItem.className = 'section-item';
+                            sectionItem.innerHTML = `
+                                <p><strong>Section:</strong> ${section.SectionName}</p>
+                                <p><strong>ID:</strong> ${section.SectionID}</p>
+                            `;
+                            sectionsList.appendChild(sectionItem);
+                        });
+                    } else {
+                        sectionsList.innerHTML = '<p>No sections found for this class.</p>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching sections:', error);
+                    errorMessage.textContent = 'Failed to load sections. Please try again.';
+                    sectionsList.innerHTML = '';
+                });
+        }
+
+        // Modal Functions
+        function openAddModal() {
+            populateClassSelect('addSectionClassSelect');
+            document.getElementById('addModal').style.display = 'block';
+            resetAddForms();
+        }
+
+        function openUpdateModal() {
+            populateClassSelect('updateClassSelect');
+            populateClassSelect('updateSectionClassSelect');
+            document.getElementById('updateModal').style.display = 'block';
+            resetUpdateForms();
+        }
+
+        function openRemoveModal() {
+            populateClassSelect('removeClassSelect');
+            populateClassSelect('removeSectionClassSelect');
+            document.getElementById('removeModal').style.display = 'block';
+            resetRemoveForms();
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // Reset form functions
+        function resetAddForms() {
+            document.getElementById('addClassForm').style.display = 'none';
+            document.getElementById('addSectionForm').style.display = 'none';
+            document.getElementById('className').value = '';
+            document.getElementById('roomNumber').value = '';
+            document.getElementById('sectionName').value = '';
+            document.getElementById('addClassError').textContent = '';
+            document.getElementById('addClassSuccess').textContent = '';
+            document.getElementById('addSectionError').textContent = '';
+            document.getElementById('addSectionSuccess').textContent = '';
+        }
+
+        function resetUpdateForms() {
+            document.getElementById('updateClassForm').style.display = 'none';
+            document.getElementById('updateSectionForm').style.display = 'none';
+            document.getElementById('classDetailsSection').style.display = 'none';
+            document.getElementById('sectionSelectContainer').style.display = 'none';
+            document.getElementById('sectionDetailsSection').style.display = 'none';
+            document.getElementById('updateClassError').textContent = '';
+            document.getElementById('updateClassSuccess').textContent = '';
+            document.getElementById('updateSectionError').textContent = '';
+            document.getElementById('updateSectionSuccess').textContent = '';
+        }
+
+        function resetRemoveForms() {
+            document.getElementById('removeClassForm').style.display = 'none';
+            document.getElementById('removeSectionForm').style.display = 'none';
+            document.getElementById('classRemoveWarning').style.display = 'none';
+            document.getElementById('sectionRemoveWarning').style.display = 'none';
+            document.getElementById('confirmRemoveClassBtn').style.display = 'none';
+            document.getElementById('confirmRemoveSectionBtn').style.display = 'none';
+            document.getElementById('removeSectionSelectContainer').style.display = 'none';
+            document.getElementById('removeClassError').textContent = '';
+            document.getElementById('removeClassSuccess').textContent = '';
+            document.getElementById('removeSectionError').textContent = '';
+            document.getElementById('removeSectionSuccess').textContent = '';
+        }
+
+        // Show form functions
+        function showAddClassForm() {
+            document.getElementById('addClassForm').style.display = 'block';
+            document.getElementById('addSectionForm').style.display = 'none';
+            document.getElementById('addClassError').textContent = '';
+            document.getElementById('addClassSuccess').textContent = '';
+        }
+
+        function showAddSectionForm() {
+            document.getElementById('addSectionForm').style.display = 'block';
+            document.getElementById('addClassForm').style.display = 'none';
+            document.getElementById('addSectionError').textContent = '';
+            document.getElementById('addSectionSuccess').textContent = '';
+        }
+
+        function showUpdateClassForm() {
+            document.getElementById('updateClassForm').style.display = 'block';
+            document.getElementById('updateSectionForm').style.display = 'none';
+            document.getElementById('classDetailsSection').style.display = 'none';
+            document.getElementById('updateClassError').textContent = '';
+            document.getElementById('updateClassSuccess').textContent = '';
+        }
+
+        function showUpdateSectionForm() {
+            document.getElementById('updateSectionForm').style.display = 'block';
+            document.getElementById('updateClassForm').style.display = 'none';
+            document.getElementById('sectionSelectContainer').style.display = 'none';
+            document.getElementById('sectionDetailsSection').style.display = 'none';
+            document.getElementById('updateSectionError').textContent = '';
+            document.getElementById('updateSectionSuccess').textContent = '';
+        }
+
+        function showRemoveClassForm() {
+            document.getElementById('removeClassForm').style.display = 'block';
+            document.getElementById('removeSectionForm').style.display = 'none';
+            document.getElementById('classRemoveWarning').style.display = 'none';
+            document.getElementById('confirmRemoveClassBtn').style.display = 'none';
+            document.getElementById('removeClassError').textContent = '';
+            document.getElementById('removeClassSuccess').textContent = '';
+        }
+
+        function showRemoveSectionForm() {
+            document.getElementById('removeSectionForm').style.display = 'block';
+            document.getElementById('removeClassForm').style.display = 'none';
+            document.getElementById('removeSectionSelectContainer').style.display = 'none';
+            document.getElementById('sectionRemoveWarning').style.display = 'none';
+            document.getElementById('confirmRemoveSectionBtn').style.display = 'none';
+            document.getElementById('removeSectionError').textContent = '';
+            document.getElementById('removeSectionSuccess').textContent = '';
+        }
+
+        // Show warning functions
+        function showClassRemoveWarning() {
+            const classId = document.getElementById('removeClassSelect').value;
+            if (classId) {
+                document.getElementById('classRemoveWarning').style.display = 'block';
+                document.getElementById('confirmRemoveClassBtn').style.display = 'inline-block';
+            } else {
+                document.getElementById('classRemoveWarning').style.display = 'none';
+                document.getElementById('confirmRemoveClassBtn').style.display = 'none';
+            }
+        }
+
+        function showSectionRemoveWarning() {
+            const sectionId = document.getElementById('removeSectionSelect').value;
+            if (sectionId) {
+                document.getElementById('sectionRemoveWarning').style.display = 'block';
+                document.getElementById('confirmRemoveSectionBtn').style.display = 'inline-block';
+            } else {
+                document.getElementById('sectionRemoveWarning').style.display = 'none';
+                document.getElementById('confirmRemoveSectionBtn').style.display = 'none';
+            }
+        }
+
+        // Fetch details functions
+        function fetchClassDetails() {
+            const classId = document.getElementById('updateClassSelect').value;
+            const detailsSection = document.getElementById('classDetailsSection');
+            const errorMessage = document.getElementById('updateClassError');
+
+            if (!classId) {
+                detailsSection.style.display = 'none';
+                return;
+            }
+
+            errorMessage.textContent = '';
+
+            // Fetch class details
+            fetch(`/get_class_details?class_id=${classId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.class) {
+                        document.getElementById('updateClassName').value = data.class.ClassName;
+                        document.getElementById('updateRoomNumber').value = data.class.RoomNumber;
+                        detailsSection.style.display = 'block';
+                    } else {
+                        errorMessage.textContent = 'Failed to fetch class details.';
+                        detailsSection.style.display = 'none';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching class details:', error);
+                    errorMessage.textContent = 'An error occurred. Please try again.';
+                    detailsSection.style.display = 'none';
+                });
+        }
+
+        function fetchSectionDetails() {
+            const sectionId = document.getElementById('updateSectionSelect').value;
+            const detailsSection = document.getElementById('sectionDetailsSection');
+            const errorMessage = document.getElementById('updateSectionError');
+
+            if (!sectionId) {
+                detailsSection.style.display = 'none';
+                return;
+            }
+
+            errorMessage.textContent = '';
+
+            // Fetch section details
+            fetch(`/get_section_details?section_id=${sectionId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.section) {
+                        document.getElementById('updateSectionName').value = data.section.SectionName;
+                        detailsSection.style.display = 'block';
+                    } else {
+                        errorMessage.textContent = 'Failed to fetch section details.';
+                        detailsSection.style.display = 'none';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching section details:', error);
+                    errorMessage.textContent = 'An error occurred. Please try again.';
+                    detailsSection.style.display = 'none';
+                });
+        }
+
+        // Add functions
+        function addClass() {
+            const className = document.getElementById('className').value.trim();
+            const roomNumber = document.getElementById('roomNumber').value.trim();
+            const errorMessage = document.getElementById('addClassError');
+            const successMessage = document.getElementById('addClassSuccess');
+
+            // Validate inputs
+            if (!className || !roomNumber) {
+                errorMessage.textContent = 'Please fill in all required fields.';
+                return;
+            }
+
+            errorMessage.textContent = '';
+            successMessage.textContent = '';
+
+            // Send request to add class
+            fetch('/add_class', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    class_name: className,
+                    room_number: roomNumber
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    successMessage.textContent = 'Class added successfully!';
+                    document.getElementById('className').value = '';
+                    document.getElementById('roomNumber').value = '';
+                    loadClasses(); // Refresh class list
+                } else {
+                    errorMessage.textContent = data.message || 'Failed to add class.';
+                }
+            })
+            .catch(error => {
+                console.error('Error adding class:', error);
+                errorMessage.textContent = 'An error occurred. Please try again.';
+            });
+        }
+
+        function addSection() {
+            const classId = document.getElementById('addSectionClassSelect').value;
+            const sectionName = document.getElementById('sectionName').value.trim();
+            const errorMessage = document.getElementById('addSectionError');
+            const successMessage = document.getElementById('addSectionSuccess');
+
+            // Validate inputs
+            if (!classId || !sectionName) {
+                errorMessage.textContent = 'Please fill in all required fields.';
+                return;
+            }
+
+            errorMessage.textContent = '';
+            successMessage.textContent = '';
+
+            // Send request to add section
+            fetch('/add_section', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    class_id: classId,
+                    section_name: sectionName
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    successMessage.textContent = 'Section added successfully!';
+                    document.getElementById('sectionName').value = '';
+                    loadClasses(); // Refresh class list
+                } else {
+                    errorMessage.textContent = data.message || 'Failed to add section.';
+                }
+            })
+            .catch(error => {
+                console.error('Error adding section:', error);
+                errorMessage.textContent = 'An error occurred. Please try again.';
+            });
+        }
+
+        // Update functions
+        function updateClass() {
+            const classId = document.getElementById('updateClassSelect').value;
+            const className = document.getElementById('updateClassName').value.trim();
+            const roomNumber = document.getElementById('updateRoomNumber').value.trim();
+            const errorMessage = document.getElementById('updateClassError');
+            const successMessage = document.getElementById('updateClassSuccess');
+
+            // Validate inputs
+            if (!classId || !className || !roomNumber) {
+                errorMessage.textContent = 'Please fill in all required fields.';
+                return;
+            }
+
+            errorMessage.textContent = '';
+            successMessage.textContent = '';
+
+            // Send request to update class
+            fetch('/update_class', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    class_id: classId,
+                    class_name: className,
+                    room_number: roomNumber
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    successMessage.textContent = 'Class updated successfully!';
+                    loadClasses(); // Refresh class list
+                } else {
+                    errorMessage.textContent = data.message || 'Failed to update class.';
+                }
+            })
+            .catch(error => {
+                console.error('Error updating class:', error);
+                errorMessage.textContent = 'An error occurred. Please try again.';
+            });
+        }
+
+        function updateSection() {
+            const sectionId = document.getElementById('updateSectionSelect').value;
+            const sectionName = document.getElementById('updateSectionName').value.trim();
+            const errorMessage = document.getElementById('updateSectionError');
+            const successMessage = document.getElementById('updateSectionSuccess');
+
+            // Validate inputs
+            if (!sectionId || !sectionName) {
+                errorMessage.textContent = 'Please fill in all required fields.';
+                return;
+            }
+
+            errorMessage.textContent = '';
+            successMessage.textContent = '';
+
+            // Send request to update section
+            fetch('/update_section', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    section_id: sectionId,
+                    section_name: sectionName
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    successMessage.textContent = 'Section updated successfully!';
+                    loadClasses(); // Refresh class list
+                } else {
+                    errorMessage.textContent = data.message || 'Failed to update section.';
+                }
+            })
+            .catch(error => {
+                console.error('Error updating section:', error);
+                errorMessage.textContent = 'An error occurred. Please try again.';
+            });
+        }
+
+        // Remove functions
+        function removeClass() {
+            const classId = document.getElementById('removeClassSelect').value;
+            const errorMessage = document.getElementById('removeClassError');
+            const successMessage = document.getElementById('removeClassSuccess');
+
+            if (!classId) {
+                errorMessage.textContent = 'Please select a class to remove.';
+                return;
+            }
+
+            errorMessage.textContent = '';
+            successMessage.textContent = '';
+
+            // Send request to remove class
+            fetch('/remove_class', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    class_id: classId
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    successMessage.textContent = 'Class removed successfully!';
+                    document.getElementById('confirmRemoveClassBtn').style.display = 'none';
+                    document.getElementById('classRemoveWarning').style.display = 'none';
+                    document.getElementById('removeClassSelect').value = '';
+
+                    // Refresh class data
+                    loadClasses();
+                    populateClassSelect('removeClassSelect');
+                    populateClassSelect('removeSectionClassSelect');
+                    populateClassSelect('addSectionClassSelect');
+                    populateClassSelect('updateClassSelect');
+                    populateClassSelect('updateSectionClassSelect');
+                } else {
+                    errorMessage.textContent = data.message || 'Failed to remove class.';
+                }
+            })
+            .catch(error => {
+                console.error('Error removing class:', error);
+                errorMessage.textContent = 'An error occurred. Please try again.';
+            });
+        }
+
+        function removeSection() {
+            const sectionId = document.getElementById('removeSectionSelect').value;
+            const errorMessage = document.getElementById('removeSectionError');
+            const successMessage = document.getElementById('removeSectionSuccess');
+
+            if (!sectionId) {
+                errorMessage.textContent = 'Please select a section to remove.';
+                return;
+            }
+
+            errorMessage.textContent = '';
+            successMessage.textContent = '';
+
+            // Send request to remove section
+            fetch('/remove_section', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    section_id: sectionId
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    successMessage.textContent = 'Section removed successfully!';
+                    document.getElementById('confirmRemoveSectionBtn').style.display = 'none';
+                    document.getElementById('sectionRemoveWarning').style.display = 'none';
+                    document.getElementById('removeSectionSelect').value = '';
+
+                    // Refresh data
+                    loadClasses();
+                    const classId = document.getElementById('removeSectionClassSelect').value;
+                    if (classId) {
+                        loadSectionsForRemoval();
+                    }
+                } else {
+                    errorMessage.textContent = data.message || 'Failed to remove section.';
+                }
+            })
+            .catch(error => {
+                console.error('Error removing section:', error);
+                errorMessage.textContent = 'An error occurred. Please try again.';
+            });
+        }
+
+        // Close modal when clicking outside of it
+        window.onclick = function(event) {
+            const modals = document.getElementsByClassName('modal');
+            for (let i = 0; i < modals.length; i++) {
+                if (event.target === modals[i]) {
+                    modals[i].style.display = 'none';
+                }
+            }
+        };
+
+        // Logout functionality
+                // Logout functionality
+        document.getElementById('logoutBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            window.location.href = '/logout';
+        });
+    </script>
+</body>
+</html>

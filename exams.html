@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exam Management</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar h1 {
+            font-size: 24px;
+            font-weight: 500;
+        }
+
+        .navbar-links {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .navbar-links a {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            transition: opacity 0.2s;
+        }
+
+        .navbar-links a:hover {
+            opacity: 0.8;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+
+        .page-header {
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-header h2 {
+            color: #333;
+            font-size: 28px;
+        }
+
+        .actions-container {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .btn {
+            display: inline-block;
+            background: #764ba2;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 15px;
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .btn:hover {
+            background: #5f3d82;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            background-color: #545b62;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
+        .btn-success {
+            background-color: #28a745;
+        }
+
+        .btn-success:hover {
+            background-color: #218838;
+        }
+
+        .btn-info {
+            background-color: #17a2b8;
+        }
+
+        .btn-info:hover {
+            background-color: #138496;
+        }
+
+        /* Table styles */
+        .table-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+            overflow-x: auto;
+        }
+
+        .exams-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .exams-table th,
+        .exams-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .exams-table th {
+            background-color: #f2f2f2;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .exams-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .exams-table tr:hover {
+            background-color: #f8f8f8;
+        }
+
+        /* Filter section */
+        .filter-section {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .filter-form {
+            display: flex;
+            gap: 15px;
+            align-items: flex-end;
+            flex-wrap: wrap;
+        }
+
+        .form-group {
+            flex: 1;
+            min-width: 200px;
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group select,
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 500px;
+            max-width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 20px;
+        }
+
+        .close-btn {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close-btn:hover {
+            color: #333;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .error-message {
+            color: #dc3545;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        .success-message {
+            color: #28a745;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        /* Additional modal specific styles */
+        .choice-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .choice-buttons button {
+            flex: 1;
+            max-width: 200px;
+        }
+
+        .form-section {
+            display: none;
+        }
+
+        /* Warning message */
+        .warning-message {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            margin-top: 20px;
+        }
+
+        .pagination button {
+            background: #f2f2f2;
+            border: 1px solid #ddd;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background 0.3s;
+        }
+
+        .pagination button:hover {
+            background: #e0e0e0;
+        }
+
+        .pagination button.active {
+            background: #764ba2;
+            color: white;
+            border-color: #764ba2;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .actions-container {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                text-align: center;
+            }
+
+            .modal-content {
+                width: 95%;
+                margin: 10% auto;
+            }
+
+            .choice-buttons {
+                flex-direction: column;
+            }
+
+            .choice-buttons button {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <h1>Exam Management</h1>
+        <div class="navbar-links">
+            <a href="/admin">Dashboard</a>
+            <a href="login_page.html" id="logoutBtn">Logout</a>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container">
+        <div class="page-header">
+            <h2>Scheduled Exams</h2>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="actions-container">
+            <button class="btn" onclick="openScheduleModal()">Schedule Exam</button>
+            <button class="btn btn-secondary" onclick="openUpdateModal()">Update Exam</button>
+            <button class="btn btn-danger" onclick="openRemoveModal()">Remove Exam</button>
+        </div>
+
+        <!-- Filter Section -->
+        <div class="filter-section">
+            <h3>Filter Exams</h3>
+            <div class="filter-form">
+                <div class="form-group">
+                    <label for="filterSubject">Filter by Subject</label>
+                    <select id="filterSubject">
+                        <option value="">All Subjects</option>
+                        <!-- Will be populated by JavaScript -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="filterDateFrom">From Date</label>
+                    <input type="date" id="filterDateFrom">
+                </div>
+                <div class="form-group">
+                    <label for="filterDateTo">To Date</label>
+                    <input type="date" id="filterDateTo">
+                </div>
+                <button class="btn" onclick="applyFilters()">Apply Filters</button>
+                <button class="btn btn-secondary" onclick="resetFilters()">Reset</button>
+            </div>
+        </div>
+
+        <!-- Table Container -->
+        <div class="table-container">
+            <table class="exams-table">
+                <thead>
+                    <tr>
+                        <th>Exam ID</th>
+                        <th>Subject</th>
+                        <th>Exam Date</th>
+                        <th>Total Marks</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="examsTableBody">
+                    <!-- Will be populated by JavaScript -->
+                </tbody>
+            </table>
+            <div id="noRecordsMessage" style="display: none; text-align: center; padding: 20px;">
+                No exam records found.
+            </div>
+            <div class="pagination" id="pagination">
+                <!-- Will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Schedule Exam Modal -->
+    <div id="scheduleModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Schedule New Exam</h2>
+                <span class="close-btn" onclick="closeModal('scheduleModal')">&times;</span>
+            </div>
+            <div id="scheduleExamError" class="error-message"></div>
+            <div id="scheduleExamSuccess" class="success-message"></div>
+            <form id="scheduleExamForm">
+                <div class="form-group">
+                    <label for="examSubject">Subject*</label>
+                    <select id="examSubject" required>
+                        <option value="">Select Subject</option>
+                        <!-- Will be populated by JavaScript -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="examDate">Exam Date*</label>
+                    <input type="date" id="examDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="examTotalMarks">Total Marks*</label>
+                    <input type="number" id="examTotalMarks" min="1" max="1000" required placeholder="Enter total marks">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('scheduleModal')">Cancel</button>
+                    <button type="button" class="btn btn-success" onclick="scheduleExam()">Schedule Exam</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Update Exam Modal -->
+    <div id="updateModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Update Exam</h2>
+                <span class="close-btn" onclick="closeModal('updateModal')">&times;</span>
+            </div>
+            <div id="updateExamError" class="error-message"></div>
+            <div id="updateExamSuccess" class="success-message"></div>
+            <form id="updateExamForm">
+                <div class="form-group">
+                    <label for="updateSubject">Select Subject*</label>
+                    <select id="updateSubject" onchange="loadExamsBySubject()" required>
+                        <option value="">Select Subject</option>
+                        <!-- Will be populated by JavaScript -->
+                    </select>
+                </div>
+                <div class="form-group" id="updateExamDateContainer" style="display: none;">
+                    <label for="updateExamSelect">Select Exam*</label>
+                    <select id="updateExamSelect" onchange="loadExamDetails()" required>
+                        <option value="">Select Exam Date</option>
+                        <!-- Will be populated by JavaScript -->
+                    </select>
+                </div>
+                <div id="updateExamDetails" style="display: none;">
+                    <div class="form-group">
+                        <label for="updateExamDate">Exam Date*</label>
+                        <input type="date" id="updateExamDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="updateExamTotalMarks">Total Marks*</label>
+                        <input type="number" id="updateExamTotalMarks" min="1" max="1000" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closeModal('updateModal')">Cancel</button>
+                        <button type="button" class="btn btn-success" onclick="updateExam()">Update Exam</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Remove Exam Modal -->
+    <div id="removeModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Remove Exam</h2>
+                <span class="close-btn" onclick="closeModal('removeModal')">&times;</span>
+            </div>
+            <div id="removeExamError" class="error-message"></div>
+            <div id="removeExamSuccess" class="success-message"></div>
+            <form id="removeExamForm">
+                <div class="form-group">
+                    <label for="removeSubject">Select Subject*</label>
+                    <select id="removeSubject" onchange="loadExamsForRemoval()" required>
+                        <option value="">Select Subject</option>
+                        <!-- Will be populated by JavaScript -->
+                    </select>
+                </div>
+                <div class="form-group" id="removeExamDateContainer" style="display: none;">
+                    <label for="removeExamSelect">Select Exam*</label>
+                    <select id="removeExamSelect" onchange="showRemoveWarning()" required>
+                        <option value="">Select Exam Date</option>
+                        <!-- Will be populated by JavaScript -->
+                    </select>
+                </div>
+                <div id="examRemoveWarning" class="warning-message" style="display: none;">
+                    <p><strong>Warning:</strong> Removing this exam will permanently delete all associated data including exam results. This action cannot be undone.</p>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('removeModal')">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="confirmRemoveBtn" style="display: none;" onclick="removeExam()">Remove Permanently</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let currentPage = 1;
+        let selectedExamId = null;
+
+        // Initialization on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set today's date as minimum for date inputs
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('examDate').min = today;
+
+            // Load initial data
+            loadExams();
+            populateSubjectDropdowns();
+        });
+
+        // Load exams with optional filters
+        function loadExams(page = 1) {
+            currentPage = page;
+            const subject = document.getElementById('filterSubject').value;
+            const dateFrom = document.getElementById('filterDateFrom').value;
+            const dateTo = document.getElementById('filterDateTo').value;
+
+            const tableBody = document.getElementById('examsTableBody');
+            const noRecordsMessage = document.getElementById('noRecordsMessage');
+            const pagination = document.getElementById('pagination');
+
+            // Clear previous data
+            tableBody.innerHTML = '';
+            noRecordsMessage.style.display = 'none';
+            pagination.innerHTML = '';
+
+            // Prepare query parameters
+            let params = new URLSearchParams();
+            params.append('page', page);
+            if (subject) params.append('subject_id', subject);
+            if (dateFrom) params.append('date_from', dateFrom);
+            if (dateTo) params.append('date_to', dateTo);
+
+            // Fetch exams data (will be handled by Flask backend)
+            fetch(`/get_exams_for_exam?${params.toString()}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.exams && data.exams.length > 0) {
+                        data.exams.forEach(exam => {
+                            const row = document.createElement('tr');
+
+                            // Format the date from YYYY-MM-DD to DD/MM/YYYY for display
+                            const examDate = new Date(exam.ExamDate);
+                            const formattedDate = examDate.toLocaleDateString('en-GB');
+
+                            row.innerHTML = `
+                                <td>${exam.ExamID}</td>
+                                <td>${exam.SubjectName}</td>
+                                <td>${formattedDate}</td>
+                                <td>${exam.TotalMarks}</td>
+                                <td>
+                                    <button class="btn btn-secondary btn-sm" onclick="prepareUpdateExam(${exam.ExamID})">Edit</button>
+                                </td>
+                            `;
+                            tableBody.appendChild(row);
+                        });
+
+                        // Create pagination
+                        if (data.total_pages > 1) {
+                            for (let i = 1; i <= data.total_pages; i++) {
+                                const button = document.createElement('button');
+                                button.textContent = i;
+                                button.className = page === i ? 'active' : '';
+                                button.onclick = () => loadExams(i);
+                                pagination.appendChild(button);
+                            }
+                        }
+                    } else {
+                        showNoRecords();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading exams:', error);
+                    showNoRecords('Failed to load exam data. Please try again.');
+                });
+        }
+
+        // Apply filters for exam list
+        function applyFilters() {
+            loadExams(1); // Reset to first page when applying filters
+        }
+
+        // Reset filters
+        function resetFilters() {
+            document.getElementById('filterSubject').value = '';
+            document.getElementById('filterDateFrom').value = '';
+            document.getElementById('filterDateTo').value = '';
+            loadExams(1);
+        }
+
+        // Show no records message
+        function showNoRecords(message = 'No exam records found.') {
+            const tableBody = document.getElementById('examsTableBody');
+            const noRecordsMessage = document.getElementById('noRecordsMessage');
+
+            tableBody.innerHTML = '';
+            noRecordsMessage.textContent = message;
+            noRecordsMessage.style.display = 'block';
+        }
+
+        // Populate subject dropdowns
+        function populateSubjectDropdowns() {
+            // Get all subject dropdowns
+            const dropdowns = [
+                document.getElementById('filterSubject'),
+                document.getElementById('examSubject'),
+                document.getElementById('updateSubject'),
+                document.getElementById('removeSubject')
+            ];
+
+            // Fetch subjects from backend
+            fetch('/get_all_subjects_for_exam')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.subjects && data.subjects.length > 0) {
+                        // Populate each dropdown
+                        dropdowns.forEach(dropdown => {
+                            if (dropdown) {
+                                // Clear existing options except the first one
+                                while (dropdown.options.length > 1) {
+                                    dropdown.remove(1);
+                                }
+
+                                // Add new options
+                                data.subjects.forEach(subject => {
+                                    const option = document.createElement('option');
+                                    option.value = subject.SubjectID;
+                                    option.textContent = subject.SubjectName;
+                                    dropdown.appendChild(option);
+                                });
+                            }
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching subjects:', error);
+                });
+        }
+
+        // Modal Functions
+        function openScheduleModal() {
+            document.getElementById('scheduleModal').style.display = 'block';
+            resetScheduleForm();
+        }
+
+        function openUpdateModal() {
+            document.getElementById('updateModal').style.display = 'block';
+            resetUpdateForm();
+        }
+
+        function openRemoveModal() {
+            document.getElementById('removeModal').style.display = 'block';
+            resetRemoveForm();
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // Reset form functions
+        function resetScheduleForm() {
+            document.getElementById('scheduleExamForm').reset();
+            document.getElementById('scheduleExamError').textContent = '';
+            document.getElementById('scheduleExamSuccess').textContent = '';
+
+            // Set today's date as minimum date for exam
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('examDate').min = today;
+        }
+
+        function resetUpdateForm() {
+            document.getElementById('updateExamForm').reset();
+            document.getElementById('updateExamDateContainer').style.display = 'none';
+            document.getElementById('updateExamDetails').style.display = 'none';
+            document.getElementById('updateExamError').textContent = '';
+            document.getElementById('updateExamSuccess').textContent = '';
+        }
+
+        function resetRemoveForm() {
+            document.getElementById('removeExamForm').reset();
+            document.getElementById('removeExamDateContainer').style.display = 'none';
+            document.getElementById('examRemoveWarning').style.display = 'none';
+            document.getElementById('confirmRemoveBtn').style.display = 'none';
+            document.getElementById('removeExamError').textContent = '';
+            document.getElementById('removeExamSuccess').textContent = '';
+        }
+
+        // Load exams by subject for update
+        function loadExamsBySubject() {
+            const subjectId = document.getElementById('updateSubject').value;
+            const examContainer = document.getElementById('updateExamDateContainer');
+            const examSelect = document.getElementById('updateExamSelect');
+            const detailsSection = document.getElementById('updateExamDetails');
+
+            // Reset and hide sections
+            examSelect.innerHTML = '<option value="">Select Exam Date</option>';
+            examContainer.style.display = 'none';
+            detailsSection.style.display = 'none';
+
+            if (!subjectId) return;
+
+            // Fetch exams for the selected subject
+            fetch(`/get_exams_by_subject?subject_id=${subjectId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.exams && data.exams.length > 0) {
+                        data.exams.forEach(exam => {
+                            const option = document.createElement('option');
+                            option.value = exam.ExamID;
+
+                            // Format the date for display
+                            const examDate = new Date(exam.ExamDate);
+                            const formattedDate = examDate.toLocaleDateString('en-GB');
+
+                            option.textContent = `${formattedDate} (ID: ${exam.ExamID})`;
+                            examSelect.appendChild(option);
+                        });
+                        examContainer.style.display = 'block';
+                    } else {
+                        document.getElementById('updateExamError').textContent = 'No exams found for this subject.';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching exams by subject:', error);
+                    document.getElementById('updateExamError').textContent = 'Error loading exams.';
+                });
+        }
+
+        // Load exams for removal
+        function loadExamsForRemoval() {
+            const subjectId = document.getElementById('removeSubject').value;
+            const examContainer = document.getElementById('removeExamDateContainer');
+            const examSelect = document.getElementById('removeExamSelect');
+
+            // Reset and hide sections
+            examSelect.innerHTML = '<option value="">Select Exam Date</option>';
+            examContainer.style.display = 'none';
+            document.getElementById('examRemoveWarning').style.display = 'none';
+            document.getElementById('confirmRemoveBtn').style.display = 'none';
+
+            if (!subjectId) return;
+
+            // Fetch exams for the selected subject
+            fetch(`/get_exams_by_subject?subject_id=${subjectId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.exams && data.exams.length > 0) {
+                        data.exams.forEach(exam => {
+                            const option = document.createElement('option');
+                            option.value = exam.ExamID;
+
+                            // Format the date for display
+                            const examDate = new Date(exam.ExamDate);
+                            const formattedDate = examDate.toLocaleDateString('en-GB');
+
+                            option.textContent = `${formattedDate} (ID: ${exam.ExamID})`;
+                            examSelect.appendChild(option);
+                        });
+                        examContainer.style.display = 'block';
+                    } else {
+                        document.getElementById('removeExamError').textContent = 'No exams found for this subject.';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching exams for removal:', error);
+                    document.getElementById('removeExamError').textContent = 'Error loading exams.';
+                });
+        }
+
+        // Load exam details for update
+        function loadExamDetails() {
+            const examId = document.getElementById('updateExamSelect').value;
+            const detailsSection = document.getElementById('updateExamDetails');
+
+            if (!examId) {
+                detailsSection.style.display = 'none';
+                return;
+            }
+
+            // Fetch exam details
+            fetch(`/get_exam_details?exam_id=${examId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.exam) {
+                        document.getElementById('updateExamDate').value = data.exam.ExamDate;
+                        document.getElementById('updateExamTotalMarks').value = data.exam.TotalMarks;
+
+                        // Set today's date as minimum date
+                        const today = new Date().toISOString().split('T')[0];
+                        document.getElementById('updateExamDate').min = today;
+
+                        detailsSection.style.display = 'block';
+                        selectedExamId = examId;
+                    } else {
+                        document.getElementById('updateExamError').textContent = 'Failed to load exam details.';
+                        detailsSection.style.display = 'none';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching exam details:', error);
+                    document.getElementById('updateExamError').textContent = 'Error loading exam details.';
+                    detailsSection.style.display = 'none';
+                });
+        }
+
+        // Show warning when exam is selected for removal
+        function showRemoveWarning() {
+            const examId = document.getElementById('removeExamSelect').value;
+            if (examId) {
+                document.getElementById('examRemoveWarning').style.display = 'block';
+                document.getElementById('confirmRemoveBtn').style.display = 'inline-block';
+                selectedExamId = examId;
+            } else {
+                document.getElementById('examRemoveWarning').style.display = 'none';
+                document.getElementById('confirmRemoveBtn').style.display = 'none';
+                selectedExamId = null;
+            }
+        }
+
+        // Prepare update exam (shortcut from the main table)
+        function prepareUpdateExam(examId) {
+            document.getElementById('updateModal').style.display = 'block';
+            resetUpdateForm();
+
+            // Fetch exam details to get the subject
+            fetch(`/get_exam_details?exam_id=${examId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.exam && data.exam.SubjectID) {
+                        // Set the subject dropdown
+                        document.getElementById('updateSubject').value = data.exam.SubjectID;
+
+                        // Load exams for this subject
+                        loadExamsBySubject();
+
+                        // Need a small delay to ensure the exam select is populated
+                        setTimeout(() => {
+                            document.getElementById('updateExamSelect').value = examId;
+                            loadExamDetails();
+                        }, 500);
+                    } else {
+                        document.getElementById('updateExamError').textContent = 'Failed to load exam details.';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching exam details:', error);
+                    document.getElementById('updateExamError').textContent = 'Error loading exam details.';
+                });
+        }
+
+        // Schedule a new exam
+        function scheduleExam() {
+            // Get form values
+            const subjectId = document.getElementById('examSubject').value;
+            const examDate = document.getElementById('examDate').value;
+            const totalMarks = document.getElementById('examTotalMarks').value;
+            const errorElement = document.getElementById('scheduleExamError');
+            const successElement = document.getElementById('scheduleExamSuccess');
+
+            // Clear previous messages
+            errorElement.textContent = '';
+            successElement.textContent = '';
+
+            // Validate form
+            if (!subjectId || !examDate || !totalMarks) {
+                errorElement.textContent = 'Please fill all required fields.';
+                return;
+            }
+
+            if (totalMarks <= 0 || totalMarks > 1000) {
+                errorElement.textContent = 'Total marks must be between 1 and 1000.';
+                return;
+            }
+
+            // Prepare data to send
+            const examData = {
+                subject_id: subjectId,
+                exam_date: examDate,
+                total_marks: totalMarks
+            };
+
+            // Send data to backend
+            fetch('/schedule_exam', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(examData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    successElement.textContent = 'Exam scheduled successfully!';
+                    resetScheduleForm();
+                    setTimeout(() => {
+                        closeModal('scheduleModal');
+                        loadExams(); // Refresh the exams list
+                    }, 2000);
+                } else {
+                    errorElement.textContent = data.message || 'Failed to schedule exam.';
+                }
+            })
+            .catch(error => {
+                console.error('Error scheduling exam:', error);
+                errorElement.textContent = 'An error occurred. Please try again.';
+            });
+        }
+
+        // Update an existing exam
+        function updateExam() {
+            if (!selectedExamId) {
+                document.getElementById('updateExamError').textContent = 'No exam selected.';
+                return;
+            }
+
+            // Get form values
+            const examDate = document.getElementById('updateExamDate').value;
+            const totalMarks = document.getElementById('updateExamTotalMarks').value;
+            const errorElement = document.getElementById('updateExamError');
+            const successElement = document.getElementById('updateExamSuccess');
+
+            // Clear previous messages
+            errorElement.textContent = '';
+            successElement.textContent = '';
+
+            // Validate form
+            if (!examDate || !totalMarks) {
+                errorElement.textContent = 'Please fill all required fields.';
+                return;
+            }
+
+            if (totalMarks <= 0 || totalMarks > 1000) {
+                errorElement.textContent = 'Total marks must be between 1 and 1000.';
+                return;
+            }
+
+            // Prepare data to send
+            const examData = {
+                exam_id: selectedExamId,
+                exam_date: examDate,
+                total_marks: totalMarks
+            };
+
+            // Send data to backend
+            fetch('/update_exam', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(examData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    successElement.textContent = 'Exam updated successfully!';
+                    setTimeout(() => {
+                        closeModal('updateModal');
+                        loadExams(); // Refresh the exams list
+                    }, 2000);
+                } else {
+                    errorElement.textContent = data.message || 'Failed to update exam.';
+                }
+            })
+            .catch(error => {
+                console.error('Error updating exam:', error);
+                errorElement.textContent = 'An error occurred. Please try again.';
+            });
+        }
+
+        // Remove an exam
+        function removeExam() {
+            if (!selectedExamId) {
+                document.getElementById('removeExamError').textContent = 'No exam selected.';
+                return;
+            }
+
+            const errorElement = document.getElementById('removeExamError');
+            const successElement = document.getElementById('removeExamSuccess');
+
+            // Clear previous messages
+            errorElement.textContent = '';
+            successElement.textContent = '';
+
+            // Send request to backend without showing the confirmation dialog
+            fetch('/remove_exam', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ exam_id: selectedExamId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    successElement.textContent = 'Exam removed successfully!';
+                    document.getElementById('examRemoveWarning').style.display = 'none';
+                    document.getElementById('confirmRemoveBtn').style.display = 'none';
+                    document.getElementById('removeExamSelect').value = '';
+                    setTimeout(() => {
+                        closeModal('removeModal');
+                        loadExams(); // Refresh the exams list
+                    }, 2000);
+                } else {
+                    errorElement.textContent = data.message || 'Failed to remove exam.';
+                }
+            })
+            .catch(error => {
+                console.error('Error removing exam:', error);
+                errorElement.textContent = 'An error occurred. Please try again.';
+            });
+        }
+
+        // Event listener for logout button
+        // Logout functionality
+        document.getElementById('logoutBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            window.location.href = '/logout';
+        });
+
+        // Format date for display (helper function)
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-GB'); // DD/MM/YYYY format
+        }
+
+        // Handle any server errors
+        function handleServerError(error, elementId) {
+            console.error('Server error:', error);
+            document.getElementById(elementId).textContent = 'A server error occurred. Please try again later.';
+        }
+    </script>
+</body>
+</html>

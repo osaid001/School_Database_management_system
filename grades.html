@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Grades</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar h1 {
+            font-size: 24px;
+            font-weight: 500;
+        }
+
+        .navbar-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .navbar-links a {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            transition: opacity 0.2s;
+        }
+
+        .navbar-links a:hover {
+            opacity: 0.8;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+
+        .page-header {
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-header h2 {
+            color: #333;
+            font-size: 28px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.3s;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background-color: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #5a6fd3;
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: #667eea;
+            border: 1px solid #667eea;
+        }
+
+        .btn-secondary:hover {
+            background-color: rgba(102, 126, 234, 0.1);
+        }
+
+        .btn-success {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #218838;
+        }
+
+        .grades-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+        }
+
+        .grades-table th,
+        .grades-table td {
+            padding: 12px 15px;
+            text-align: left;
+        }
+
+        .grades-table thead {
+            background-color: #667eea;
+            color: white;
+        }
+
+        .grades-table tbody tr {
+            border-bottom: 1px solid #ddd;
+        }
+
+        .grades-table tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        .grades-table tbody tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        .grades-table tbody tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .marks-input {
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            width: 100px;
+            text-align: center;
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 20px;
+            gap: 10px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 400px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-content h3 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .close-modal {
+            margin-top: 20px;
+        }
+
+        .error-message {
+            color: #dc3545;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            display: none;
+        }
+
+        .info-box {
+            background-color: #e2e3e5;
+            color: #383d41;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .info-box h3 {
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .info-box p {
+            margin-bottom: 5px;
+        }
+
+        .exam-selector {
+            margin-bottom: 20px;
+        }
+
+        .exam-selector select {
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            margin-right: 10px;
+            min-width: 250px;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top-color: #667eea;
+            animation: spin 1s ease-in-out infinite;
+            margin-left: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .page-header h2 {
+                margin-bottom: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <h1 id="pageTitle">Manage Grades</h1>
+        <div class="navbar-links">
+            <a href="/teacher" class="btn btn-secondary">Dashboard</a>
+            <a href="/logout" id="logoutBtn">Logout</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div id="errorMessage" class="error-message"></div>
+
+        <div class="info-box">
+            <h3>Class Information</h3>
+            <p><strong>Class:</strong> <span id="className">Loading...</span></p>
+            <p><strong>Section:</strong> <span id="sectionName">Loading...</span></p>
+            <p><strong>Subject:</strong> <span id="subjectName">Loading...</span></p>
+        </div>
+
+        <div class="exam-selector">
+            <label for="examSelect"><strong>Select Exam:</strong></label>
+            <select id="examSelect">
+                <option value="">Loading exams...</option>
+            </select>
+            <button id="loadExamBtn" class="btn btn-primary">Load</button>
+            <span id="loadingSpinner" class="loading-spinner" style="display: none;"></span>
+        </div>
+
+        <div class="page-header">
+            <h2 id="gradingAction">Assign Grades</h2>
+            <div>
+                <p id="examInfoText"></p>
+                <p id="totalMarksText"></p>
+            </div>
+        </div>
+
+        <form id="gradesForm">
+            <table class="grades-table">
+                <thead>
+                    <tr>
+                        <th>Roll No.</th>
+                        <th>Student Name</th>
+                        <th>Marks</th>
+                    </tr>
+                </thead>
+                <tbody id="studentTableBody">
+                    <tr>
+                        <td colspan="3" style="text-align: center;">Please select an exam first</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="action-buttons">
+                <button type="button" class="btn btn-secondary" onclick="window.location.href='/teacher'">Cancel</button>
+                <button type="submit" class="btn btn-success">Submit Grades</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="successModal" class="modal">
+        <div class="modal-content">
+            <h3 id="successMessage">Grades Submitted Successfully!</h3>
+            <p>The grade records have been saved.</p>
+            <button class="btn btn-primary close-modal" onclick="redirectToDashboard()">Back to Dashboard</button>
+        </div>
+    </div>
+
+    <script>
+        // Variables to store information
+        let classId = "";
+        let sectionId = "";
+        let subject = "";
+        let action = "";
+        let selectedExamId = "";
+        let totalMarks = 0;
+        let examDate = "";
+
+        // Parse URL parameters
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            classId = urlParams.get('class_id');
+            sectionId = urlParams.get('section_id');
+            subject = urlParams.get('subject');
+            action = urlParams.get('action');
+
+            if (!classId || !sectionId || !subject || !action) {
+                showError("Missing required parameters. Please return to the dashboard.");
+                return;
+            }
+
+            // Set page title based on action
+            if (action === 'update') {
+                document.getElementById('pageTitle').textContent = 'Update Grades';
+                document.getElementById('gradingAction').textContent = 'Update Grades';
+            }
+
+            // Display subject name
+            document.getElementById('subjectName').textContent = subject;
+
+            // Fetch class and section details
+            fetchClassAndSectionDetails();
+
+            // Fetch exams for this subject
+            fetchExams();
+
+            // Setup event listener for exam selection
+            document.getElementById('loadExamBtn').addEventListener('click', function() {
+                const examDropdown = document.getElementById('examSelect');
+                selectedExamId = examDropdown.value;
+
+                if (!selectedExamId) {
+                    showError("Please select an exam first.");
+                    return;
+                }
+
+                // Get exam information
+                const selectedOption = examDropdown.options[examDropdown.selectedIndex];
+                totalMarks = selectedOption.getAttribute('data-total-marks');
+                examDate = selectedOption.getAttribute('data-exam-date');
+
+                document.getElementById('examInfoText').textContent = `Exam Date: ${examDate}`;
+                document.getElementById('totalMarksText').textContent = `Total Marks: ${totalMarks}`;
+
+                // Fetch students for the selected class and section
+                fetchStudentList();
+            });
+
+            // Setup form submission
+            document.getElementById('gradesForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                submitGrades();
+            });
+        });
+
+        // Fetch class and section names
+        function fetchClassAndSectionDetails() {
+            fetch(`/get_class_section_details?class_id=${classId}&section_id=${sectionId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch class and section details');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    document.getElementById('className').textContent = data.class_name;
+                    document.getElementById('sectionName').textContent = data.section_name;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showError("Failed to load class and section details. Please try again.");
+                });
+        }
+
+        // Fetch exams for this subject
+        function fetchExams() {
+            fetch(`/get_exams_for_subject?subject=${encodeURIComponent(subject)}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch exams');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.error) {
+                        showError(data.error);
+                        return;
+                    }
+
+                    populateExamDropdown(data.exams);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showError("Failed to load exams. Please try again.");
+                });
+        }
+
+        // Populate exam dropdown
+        function populateExamDropdown(exams) {
+            const dropdown = document.getElementById('examSelect');
+            dropdown.innerHTML = '';
+
+            if (exams.length === 0) {
+                dropdown.innerHTML = '<option value="">No exams found for this subject</option>';
+                showError("No exams found for this subject. Please contact the admin to schedule an exam first.");
+                return;
+            }
+
+            dropdown.innerHTML = '<option value="">Select an exam</option>';
+
+            exams.forEach(exam => {
+                const option = document.createElement('option');
+                option.value = exam.ExamID;
+                option.textContent = `${exam.ExamName} (${exam.ExamDate})`;
+                option.setAttribute('data-total-marks', exam.TotalMarks);
+                option.setAttribute('data-exam-date', exam.ExamDate);
+                dropdown.appendChild(option);
+            });
+        }
+
+        // Fetch student list
+        // This is the part of the script that needs fixing
+
+        // Fetch student list
+        function fetchStudentList() {
+            // Show loading spinner
+            document.getElementById('loadingSpinner').style.display = 'inline-block';
+
+            fetch(`/get_students_for_grading?class_id=${classId}&section_id=${sectionId}&exam_id=${selectedExamId}&action=${action}`)
+                .then(response => {
+                    // Hide loading spinner
+                    document.getElementById('loadingSpinner').style.display = 'none';
+
+                    if (!response.ok) {
+                        return response.json().then(data => {
+                            throw new Error(data.error || 'Failed to fetch students');
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.error) {
+                        showError(data.error);
+                        return;
+                    }
+
+                    populateStudentTable(data.students);
+                })
+                .catch(error => {
+                    // Hide loading spinner
+                    document.getElementById('loadingSpinner').style.display = 'none';
+                    console.error('Error:', error);
+                    showError(error.message || "Failed to load students. Please try again.");
+                });
+        }
+
+        // Populate student table
+        function populateStudentTable(students) {
+            const tableBody = document.getElementById('studentTableBody');
+            tableBody.innerHTML = '';
+
+            if (students.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="3" style="text-align: center;">No students found in this class/section</td></tr>';
+                return;
+            }
+
+            students.forEach((student, index) => {
+                const row = document.createElement('tr');
+
+                // Roll Number (just using index+1 here)
+                const rollCell = document.createElement('td');
+                rollCell.textContent = index + 1;
+                row.appendChild(rollCell);
+
+                // Student Name
+                const nameCell = document.createElement('td');
+                nameCell.textContent = student.Name;
+                row.appendChild(nameCell);
+
+                // Marks input
+                const marksCell = document.createElement('td');
+                const marksInput = document.createElement('input');
+                marksInput.type = 'number';
+                marksInput.className = 'marks-input';
+                marksInput.name = `marks_${student.StudentID}`;
+                marksInput.dataset.studentId = student.StudentID;
+                marksInput.min = 0;
+                marksInput.max = totalMarks;
+                marksInput.required = true;
+
+                // Set existing marks if updating
+                if (action === 'update' && 'MarksObtained' in student) {
+                    marksInput.value = student.MarksObtained;
+                }
+
+                marksCell.appendChild(marksInput);
+                row.appendChild(marksCell);
+
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Submit grades
+        function submitGrades() {
+            if (!selectedExamId) {
+                showError("Please select an exam first.");
+                return;
+            }
+
+            const marksInputs = document.querySelectorAll('.marks-input');
+            const students = [];
+
+            // Validate and collect all marks
+            for (const input of marksInputs) {
+                const marks = input.value.trim();
+                const studentId = input.dataset.studentId;
+
+                if (!marks) {
+                    showError("Please enter marks for all students.");
+                    return;
+                }
+
+                const marksValue = parseInt(marks, 10);
+                if (isNaN(marksValue) || marksValue < 0) {
+                    showError("Marks must be a positive number.");
+                    return;
+                }
+
+                if (marksValue > totalMarks) {
+                    showError(`Marks cannot exceed total marks (${totalMarks}).`);
+                    return;
+                }
+
+                students.push({
+                    student_id: studentId,
+                    marks: marksValue
+                });
+            }
+
+            // Show loading spinner
+            document.getElementById('loadingSpinner').style.display = 'inline-block';
+
+            // Send the data to the server
+            fetch('/submit_grades', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    class_id: classId,
+                    section_id: sectionId,
+                    exam_id: selectedExamId,
+                    action: action,
+                    students: students
+                })
+            })
+            .then(response => {
+                // Hide loading spinner
+                document.getElementById('loadingSpinner').style.display = 'none';
+
+                if (!response.ok) {
+                    return response.json().then(data => {
+                        throw new Error(data.error || 'Failed to submit grades');
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    // Show success modal
+                    document.getElementById('successModal').style.display = 'block';
+                } else if (data.error) {
+                    showError(data.error);
+                }
+            })
+            .catch(error => {
+                // Hide loading spinner
+                document.getElementById('loadingSpinner').style.display = 'none';
+                console.error('Error:', error);
+                showError(error.message || "Failed to submit grades. Please try again.");
+            });
+        }
+
+        // Show error message
+        function showError(message) {
+            const errorElement = document.getElementById('errorMessage');
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+
+            // Scroll to the error message
+            errorElement.scrollIntoView({ behavior: 'smooth' });
+
+            // Hide after 5 seconds
+            setTimeout(() => {
+                errorElement.style.display = 'none';
+            }, 5000);
+        }
+
+        // Redirect to dashboard
+        function redirectToDashboard() {
+            window.location.href = '/teacher';
+        }
+    </script>
+</body>
+</html>
